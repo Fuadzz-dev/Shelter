@@ -52,6 +52,11 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::middleware(['auth', 'pegawai'])->prefix('pegawai')->name('pegawai.')->group(function () {
     Route::get('/dashboard', [PegawaiController::class, 'dashboard'])->name('dashboard');
     Route::get('/laporan-helpdesk', [PegawaiController::class, 'laporanHelpdesk'])->name('laporan-helpdesk');
+    Route::get('/laporan-helpdesk/create', [PegawaiController::class, 'createLaporan'])->name('laporan-helpdesk.create');
+    Route::post('/laporan-helpdesk', [PegawaiController::class, 'storeLaporan'])->name('laporan-helpdesk.store');
+    Route::get('/laporan-helpdesk/{id}', [PegawaiController::class, 'detailLaporan'])->name('laporan-helpdesk.detail');
+    Route::get('/laporan-helpdesk/{id}/validasi-digital', [PegawaiController::class, 'validasiDigital'])->name('laporan-helpdesk.validasi-digital');
+    Route::post('/laporan-helpdesk/{id}/validasi-selesai', [PegawaiController::class, 'validasiSelesai'])->name('laporan-helpdesk.validasi-selesai');
 });
 
 /*

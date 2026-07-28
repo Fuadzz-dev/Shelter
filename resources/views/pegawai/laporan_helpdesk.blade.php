@@ -166,13 +166,13 @@
             }
         </style>
     </head>
-    <body class="text-on-surface">
+    <body class="bg-background text-on-background min-h-screen font-body-md text-body-md flex">
         <!-- Sidebar Pegawai -->
         @include('component.sidebar_pegawai')
 
-        <!-- Main Content Canvas -->
-        <main class="ml-[280px] min-h-screen px-4 py-8 md:px-8">
-            <div class="mx-auto max-w-[1600px]">
+        <!-- Main Content Area -->
+        <main class="w-full min-h-screen flex flex-col ml-[280px]">
+            <div class="p-container-padding flex-1 bg-surface-bright flex flex-col gap-stack-lg mt-6">
                 <!-- Page Header Section -->
                 <div
                     class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end"
@@ -184,14 +184,14 @@
                             Laporan Helpdesk
                         </h2>
                     </div>
-                    <button
+                    <a href="{{ route('pegawai.laporan-helpdesk.create') }}"
                         class="bg-primary-container flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-semibold text-white shadow-sm transition-all hover:bg-primary hover:shadow-md active:scale-95"
                     >
                         <span class="material-symbols-outlined"
                             >add_circle</span
                         >
                         <span>Buat Laporan Baru</span>
-                    </button>
+                    </a>
                 </div>
 
                 <!-- Data Table Section -->
@@ -252,9 +252,6 @@
                                         Judul Masalah
                                     </th>
                                     <th class="px-6 py-4 font-semibold">
-                                        Tanggal Selesai
-                                    </th>
-                                    <th class="px-6 py-4 font-semibold">
                                         Status
                                     </th>
                                     <th
@@ -267,377 +264,60 @@
                             <tbody
                                 class="divide-outline-variant font-body-md text-body-md divide-y"
                             >
-                                <!-- Row 1 -->
+                                @forelse($laporans as $laporan)
+                                @php
+                                    $statusBadgeClasses = [
+                                        'In Progress' => 'bg-secondary-container/20 text-on-secondary-container',
+                                        'in repair' => 'inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold tracking-tighter text-amber-700 uppercase',
+                                        'Waiting Approval' => 'bg-surface-variant text-on-surface-variant',
+                                        'Completed' => 'inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold tracking-tighter text-emerald-600 uppercase',
+                                    ];
+                                    $statusDotClasses = [
+                                        'In Progress' => 'bg-secondary-container',
+                                        'in repair' => 'bg-amber-500',
+                                        'Waiting Approval' => 'bg-outline',
+                                        'Completed' => 'bg-emerald-500',
+                                    ];
+                                    $badgeClass = $statusBadgeClasses[$laporan->status_Helpdesk] ?? 'bg-secondary-container/20 text-on-secondary-container';
+                                    $dotClass = $statusDotClasses[$laporan->status_Helpdesk] ?? 'bg-secondary-container';
+                                @endphp
                                 <tr
                                     class="hover:bg-surface-container-lowest group transition-colors"
                                 >
                                     <td
                                         class="text-on-surface-variant px-6 py-4"
                                     >
-                                        12 Okt 2023
+                                        {{ $laporan->tanggal_lapor ? $laporan->tanggal_lapor->format('d M Y') : '-' }}
                                     </td>
                                     <td
                                         class="text-on-surface px-6 py-4 font-medium"
                                     >
-                                        Gangguan koneksi radio HT area runway
-                                    </td>
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        -
+                                        {{ $laporan->judul_masalah }}
                                     </td>
                                     <td class="px-6 py-4">
                                         <span
-                                            class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold tracking-tighter text-amber-700 uppercase"
+                                            class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-tighter uppercase {{ $badgeClass }}"
                                         >
                                             <span
-                                                class="h-1.5 w-1.5 rounded-full bg-amber-500"
-                                            ></span
-                                            >In Repair
+                                                class="h-1.5 w-1.5 rounded-full {{ $dotClass }}"
+                                            ></span>{{ $laporan->status_Helpdesk }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <button
+                                        <a href="{{ route('pegawai.laporan-helpdesk.detail', $laporan->id_helpdesk) }}"
                                             class="font-bold text-secondary hover:underline"
                                         >
                                             Detail
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
-                                <!-- Row 2 -->
-                                <tr
-                                    class="hover:bg-surface-container-lowest group border-l-error border-l-4 transition-colors"
-                                >
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        13 Okt 2023
-                                    </td>
-                                    <td
-                                        class="text-on-surface px-6 py-4 font-medium"
-                                    >
-                                        CCTV Gate 4 tidak merespon/blank screen
-                                    </td>
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        -
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="bg-secondary-container/20 text-on-secondary-container inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-tighter uppercase"
-                                        >
-                                            <span
-                                                class="bg-secondary-container h-1.5 w-1.5 rounded-full"
-                                            ></span
-                                            >In Progress
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button
-                                            class="font-bold text-secondary hover:underline"
-                                        >
-                                            Detail
-                                        </button>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-8 text-on-surface-variant">
+                                        Belum ada laporan.
                                     </td>
                                 </tr>
-                                <!-- Row 3 -->
-                                <tr
-                                    class="hover:bg-surface-container-lowest group transition-colors"
-                                >
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        13 Okt 2023
-                                    </td>
-                                    <td
-                                        class="text-on-surface px-6 py-4 font-medium"
-                                    >
-                                        Permintaan installasi software e-Office
-                                    </td>
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        -
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="bg-surface-variant text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-tighter uppercase"
-                                        >
-                                            <span
-                                                class="bg-outline h-1.5 w-1.5 rounded-full"
-                                            ></span
-                                            >Waiting Approval
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button
-                                            class="font-bold text-secondary hover:underline"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 4 -->
-                                <tr
-                                    class="hover:bg-surface-container-lowest group transition-colors"
-                                >
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        14 Okt 2023
-                                    </td>
-                                    <td
-                                        class="text-on-surface px-6 py-4 font-medium"
-                                    >
-                                        Printer logistik macet total
-                                    </td>
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        -
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold tracking-tighter text-amber-700 uppercase"
-                                        >
-                                            <span
-                                                class="h-1.5 w-1.5 rounded-full bg-amber-500"
-                                            ></span
-                                            >In Repair
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button
-                                            class="font-bold text-secondary hover:underline"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 5 -->
-                                <tr
-                                    class="hover:bg-surface-container-lowest group transition-colors"
-                                >
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        14 Okt 2023
-                                    </td>
-                                    <td
-                                        class="text-on-surface px-6 py-4 font-medium"
-                                    >
-                                        Sistem ticketing parkir error berkala
-                                    </td>
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        -
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="bg-secondary-container/20 text-on-secondary-container inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-tighter uppercase"
-                                        >
-                                            <span
-                                                class="bg-secondary-container h-1.5 w-1.5 rounded-full"
-                                            ></span
-                                            >In Progress
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button
-                                            class="font-bold text-secondary hover:underline"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 6 -->
-                                <tr
-                                    class="hover:bg-surface-container-lowest group border-l-error border-l-4 transition-colors"
-                                >
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        15 Okt 2023
-                                    </td>
-                                    <td
-                                        class="text-on-surface px-6 py-4 font-medium"
-                                    >
-                                        Terdeteksi aktivitas mencurigakan di
-                                        server
-                                    </td>
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        -
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="bg-secondary-container/20 text-on-secondary-container inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-tighter uppercase"
-                                        >
-                                            <span
-                                                class="bg-secondary-container h-1.5 w-1.5 rounded-full"
-                                            ></span
-                                            >In Progress
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button
-                                            class="font-bold text-secondary hover:underline"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 7 -->
-                                <tr
-                                    class="hover:bg-surface-container-lowest group transition-colors"
-                                >
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        15 Okt 2023
-                                    </td>
-                                    <td
-                                        class="text-on-surface px-6 py-4 font-medium"
-                                    >
-                                        Update konten website pengumuman
-                                    </td>
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        -
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="bg-surface-variant text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-tighter uppercase"
-                                        >
-                                            <span
-                                                class="bg-outline h-1.5 w-1.5 rounded-full"
-                                            ></span
-                                            >Waiting Approval
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button
-                                            class="font-bold text-secondary hover:underline"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 8 -->
-                                <tr
-                                    class="hover:bg-surface-container-lowest group transition-colors"
-                                >
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        16 Okt 2023
-                                    </td>
-                                    <td
-                                        class="text-on-surface px-6 py-4 font-medium"
-                                    >
-                                        Lupa password akun aplikasi SIMAK
-                                    </td>
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        -
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="bg-secondary-container/20 text-on-secondary-container inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-tighter uppercase"
-                                        >
-                                            <span
-                                                class="bg-secondary-container h-1.5 w-1.5 rounded-full"
-                                            ></span
-                                            >In Progress
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button
-                                            class="font-bold text-secondary hover:underline"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 9 -->
-                                <tr
-                                    class="hover:bg-surface-container-lowest group border-l-4 border-l-slate-400 transition-colors"
-                                >
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        16 Okt 2023
-                                    </td>
-                                    <td
-                                        class="text-on-surface px-6 py-4 font-medium"
-                                    >
-                                        Scanner dokumen tidak terdeteksi oleh PC
-                                    </td>
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        -
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold tracking-tighter text-amber-700 uppercase"
-                                        >
-                                            <span
-                                                class="h-1.5 w-1.5 rounded-full bg-amber-500"
-                                            ></span
-                                            >In Repair
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button
-                                            class="font-bold text-secondary hover:underline"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 10 -->
-                                <tr
-                                    class="hover:bg-surface-container-lowest group transition-colors"
-                                >
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        17 Okt 2023
-                                    </td>
-                                    <td
-                                        class="text-on-surface px-6 py-4 font-medium"
-                                    >
-                                        Layar FIDS Terminal 2 mati mendadak
-                                    </td>
-                                    <td
-                                        class="text-on-surface-variant px-6 py-4"
-                                    >
-                                        -
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold tracking-tighter text-amber-700 uppercase"
-                                        >
-                                            <span
-                                                class="h-1.5 w-1.5 rounded-full bg-amber-500"
-                                            ></span
-                                            >In Repair
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button
-                                            class="font-bold text-secondary hover:underline"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -647,63 +327,25 @@
                         class="bg-surface-container-lowest border-outline-variant font-label-md text-label-md flex flex-col items-center justify-between gap-4 border-t px-6 py-4 sm:flex-row"
                     >
                         <p class="text-on-surface-variant">
-                            Menampilkan 1 - 10 dari 124 laporan
+                            Menampilkan {{ $laporans->count() }} laporan
                         </p>
-                        <div class="flex items-center gap-1.5">
-                            <button
-                                class="border-outline-variant hover:bg-surface-container-low flex h-8 w-8 items-center justify-center rounded border transition-all"
-                            >
-                                <span class="material-symbols-outlined text-sm"
-                                    >chevron_left</span
-                                >
-                            </button>
-                            <button
-                                class="flex h-8 w-8 items-center justify-center rounded bg-primary text-white"
-                            >
-                                1
-                            </button>
-                            <button
-                                class="border-outline-variant hover:bg-surface-container-low flex h-8 w-8 items-center justify-center rounded border transition-all"
-                            >
-                                2
-                            </button>
-                            <button
-                                class="border-outline-variant hover:bg-surface-container-low flex h-8 w-8 items-center justify-center rounded border transition-all"
-                            >
-                                3
-                            </button>
-                            <span class="text-on-surface-variant px-1"
-                                >...</span
-                            >
-                            <button
-                                class="border-outline-variant hover:bg-surface-container-low flex h-8 w-8 items-center justify-center rounded border transition-all"
-                            >
-                                13
-                            </button>
-                            <button
-                                class="border-outline-variant hover:bg-surface-container-low flex h-8 w-8 items-center justify-center rounded border transition-all"
-                            >
-                                <span class="material-symbols-outlined text-sm"
-                                    >chevron_right</span
-                                >
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+    </main>
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 console.log('SHELTER Helpdesk Report UI Initialized');
 
                 // Micro-interaction untuk tombol Detail di dalam tabel
-                const detailButtons = document.querySelectorAll('tbody button');
-                detailButtons.forEach((btn) => {
-                    btn.addEventListener('click', (e) => {
+                const detailLinks = document.querySelectorAll('tbody a');
+                detailLinks.forEach((link) => {
+                    link.addEventListener('click', (e) => {
                         const row = e.target.closest('tr');
                         const title =
-                            row.querySelector('td:nth-child(2)').innerText;
+                            row.querySelector('td:nth-child(2)')?.innerText || 'Unknown';
                         console.log(`Membuka detail untuk masalah: "${title}"`);
                     });
                 });

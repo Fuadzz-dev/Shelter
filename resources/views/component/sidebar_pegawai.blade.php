@@ -28,7 +28,7 @@
 
     <!-- Primary CTA Button -->
     <div class="px-gutter mb-stack-md">
-        <button
+        <a href="{{ route('pegawai.laporan-helpdesk.create') }}"
             class="text-on-secondary flex h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-secondary py-2 shadow-sm transition-colors hover:bg-secondary/90"
         >
             <span
@@ -39,7 +39,7 @@
             <span class="font-label-md text-label-md"
                 >Buat Laporan Baru</span
             >
-        </button>
+        </a>
     </div>
 
     <!-- Navigation Tabs -->
@@ -49,13 +49,13 @@
             class="font-label-md text-label-md mx-2 my-1 flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 {{ request()->routeIs('pegawai.dashboard') ? 'bg-secondary-container text-on-secondary-container shadow-sm' : 'text-on-primary/70 hover:bg-white/10 hover:text-white' }}"
             href="{{ route('pegawai.dashboard') }}"
         >
-            <span class="material-symbols-outlined">dashboard</span>
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">dashboard</span>
             <span>Dashboard</span>
         </a>
 
         <!-- Tab 2: Laporan Helpdesk -->
         <a
-            class="font-label-md text-label-md mx-2 my-1 flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 {{ request()->routeIs('pegawai.laporan-helpdesk') ? 'bg-secondary-container text-on-secondary-container shadow-sm' : 'text-on-primary/70 hover:bg-white/10 hover:text-white' }}"
+            class="font-label-md text-label-md mx-2 my-1 flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 {{ request()->routeIs('pegawai.laporan-helpdesk*') ? 'bg-secondary-container text-on-secondary-container shadow-sm' : 'text-on-primary/70 hover:bg-white/10 hover:text-white' }}"
             href="{{ route('pegawai.laporan-helpdesk') }}"
         >
             <span

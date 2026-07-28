@@ -135,13 +135,15 @@ class AuthController extends Controller
      */
     private function resolveCredentials(string $username, string $password): array
     {
-        
-        if (ctype_digit($username) && strlen($username) === 0) {
+        // Jika input berupa digit angka murni, cari berdasarkan NIP
+        if (ctype_digit($username)) {
             return ['nip' => $username, 'password' => $password];
         }
+        // Jika input berupa email, cari berdasarkan email
         if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
-        return ['email' => $username, 'password' => $password];
+            return ['email' => $username, 'password' => $password];
         }
+        // Selain itu (nama lengkap), cari berdasarkan nama_lengkap
         return ['nama_lengkap' => $username, 'password' => $password];
     }
 }

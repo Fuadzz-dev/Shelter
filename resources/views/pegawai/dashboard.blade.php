@@ -1,4 +1,4 @@
-<!doctype html>
+ <!doctype html>
 <html lang="id">
 
 <head>
@@ -148,19 +148,17 @@
 
     <!-- Main Content Area -->
     <main class="w-full min-h-screen flex flex-col ml-[280px]">
-        <!-- TopNavBar -->
-
         <!-- Page Content -->
         <div class="p-container-padding flex-1 bg-surface-bright flex flex-col gap-stack-lg mt-6">
-            <!-- Notification Banner (Waiting Approval) -->
             <h1 class="text-[32px] font-bold text-on-surface mb-6 uppercase tracking-tight">
                 Dashboard
             </h1>
-            <div
-                class="bg-secondary-fixed/20 border border-secondary/30 rounded-xl p-4 flex items-center justify-between shadow-sm">
+
+            <!-- Notifikasi Laporan Membutuhkan Validasi -->
+            @if($pendingApprovalLaporan)
+            <div class="bg-secondary-fixed/20 border border-secondary/30 rounded-xl p-4 flex items-center justify-between shadow-sm">
                 <div class="flex items-center gap-4">
-                    <div
-                        class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
+                    <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
                         <span class="material-symbols-outlined">hourglass_empty</span>
                     </div>
                     <div>
@@ -168,23 +166,22 @@
                             Laporan Membutuhkan Validasi
                         </h3>
                         <p class="font-body-md text-body-md text-on-surface-variant">
-                            Tiket #TK-2023-089 (Masalah Jaringan) telah diselesaikan oleh teknisi. Silakan validasi.
+                            {{ $pendingApprovalLaporan->nomor_Helpdesk }} telah diselesaikan oleh teknisi. Silakan validasi.
                         </p>
                     </div>
                 </div>
-                <button
-                    class="bg-secondary text-on-secondary px-6 py-2 rounded-lg font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-colors shadow-sm active:scale-95 duration-150">
+                <a href="{{ route('pegawai.laporan-helpdesk.validasi-digital', $pendingApprovalLaporan->id_helpdesk) }}"
+                    class="bg-secondary text-on-secondary px-6 py-2 rounded-lg font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-colors shadow-sm active:scale-95 duration-150 whitespace-nowrap">
                     Validasi &amp; Selesai
-                </button>
+                </a>
             </div>
+            @endif
+
             <!-- Dashboard Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Left Column: Report Form -->
-
-                <!-- Right Column: My Reports -->
+                <!-- My Reports -->
                 <div class="flex flex-col gap-6 lg:col-span-3">
-                    <div
-                        class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 shadow-[0px_4px_12px_rgba(0,51,102,0.04)] h-full flex flex-col">
+                    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 shadow-[0px_4px_12px_rgba(0,51,102,0.04)] h-full flex flex-col">
                         <div class="flex items-center justify-between mb-6 border-b border-surface-variant pb-4">
                             <div class="flex items-center gap-3">
                                 <span class="material-symbols-outlined text-primary">list_alt</span>
@@ -192,141 +189,66 @@
                                     Laporan Saya
                                 </h2>
                             </div>
-                            <button class="text-secondary font-label-md text-label-md hover:underline">
+                            <a href="{{ route('pegawai.laporan-helpdesk') }}" class="text-secondary font-label-md text-label-md hover:underline">
                                 Lihat Semua
-                            </button>
+                            </a>
                         </div>
                         <div class="flex flex-col gap-3 flex-1 overflow-y-auto">
-                            <!-- Report Item 1 -->
-                            <div
-                                class="border border-outline-variant rounded-lg p-4 flex flex-col gap-3 hover:bg-surface-container-low transition-colors group relative overflow-hidden">
-                                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-amber-500"></div>
-                                <div class="flex justify-between items-start pl-2">
-                                    <div>
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="font-label-sm text-label-sm text-outline">#TK-2023-091</span>
-                                            <span
-                                                class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 font-label-sm text-[10px] uppercase font-bold">In
-                                                Progress</span>
+                            @forelse($laporans as $laporan)
+                                @php
+                                    $statusColors = [
+                                        'In Progress' => 'bg-secondary-container/70',
+                                        'in repair' => 'bg-amber-500',
+                                        'Waiting Approval' => 'bg-slate-400',
+                                        'Completed' => 'bg-emerald-500',
+                                    ];
+                                    $statusBgColors = [
+                                        'In Progress' => 'bg-secondary-container/10 text-secondary-container',
+                                        'in repair' => 'bg-amber-500/10 text-amber-600',
+                                        'Waiting Approval' => 'bg-secondary-fixed/50 text-secondary',
+                                        'Completed' => 'bg-emerald-500/10 text-emerald-600',
+                                    ];
+                                    $barColor = $statusColors[$laporan->status_Helpdesk] ?? 'bg-amber-500';
+                                    $statusBg = $statusBgColors[$laporan->status_Helpdesk] ?? 'bg-amber-500/10 text-amber-600';
+                                @endphp
+                                <div class="border border-outline-variant rounded-lg p-4 flex flex-col gap-3 hover:bg-surface-container-low transition-colors group relative overflow-hidden">
+                                    <div class="absolute left-0 top-0 bottom-0 w-[3px] {{ $barColor }}"></div>
+                                    <div class="flex justify-between items-start pl-2">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="font-label-sm text-label-sm text-outline">{{ $laporan->nomor_Helpdesk }}</span>
+                                                <span class="px-2 py-0.5 rounded {{ $statusBg }} font-label-sm text-[10px] uppercase font-bold">{{ $laporan->status_Helpdesk }}</span>
+                                            </div>
+                                            <h4 class="font-headline-sm text-[16px] text-on-surface font-semibold">
+                                                {{ $laporan->judul_masalah }}
+                                            </h4>
+                                            <p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">
+                                                {{ $laporan->deskripsi_keluhan }}
+                                            </p>
                                         </div>
-                                        <h4 class="font-headline-sm text-[16px] text-on-surface font-semibold">
-                                            Printer Ruang Rapat Offline
-                                        </h4>
-                                        <p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">
-                                            Printer tidak terdeteksi di jaringan lokal, butuh perbaikan segera.
-                                        </p>
-                                    </div>
-                                    <span class="font-label-sm text-label-sm text-outline">Hari ini, 10:30</span>
-                                </div>
-                            </div>
-                            <!-- Report Item 2 -->
-                            <div
-                                class="border border-outline-variant rounded-lg p-4 flex flex-col gap-3 hover:bg-surface-container-low transition-colors group relative overflow-hidden">
-                                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-slate-400"></div>
-                                <div class="flex justify-between items-start pl-2">
-                                    <div>
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="font-label-sm text-label-sm text-outline">#TK-2023-089</span>
-                                            <span
-                                                class="px-2 py-0.5 rounded bg-secondary-fixed/50 text-secondary font-label-sm text-[10px] uppercase font-bold">Waiting
-                                                Approval</span>
+                                        <div class="flex flex-col items-end gap-2 flex-shrink-0">
+                                            <span class="font-label-sm text-label-sm text-outline">{{ $laporan->tanggal_lapor ? $laporan->tanggal_lapor->format('d M Y') : '-' }}</span>
+                                            @if($laporan->status_Helpdesk === 'Waiting Approval')
+                                            <a href="{{ route('pegawai.laporan-helpdesk.validasi-digital', $laporan->id_helpdesk) }}"
+                                                class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-colors shadow-sm active:scale-95 duration-150 whitespace-nowrap">
+                                                Validasi &amp; Selesai
+                                            </a>
+                                            @endif
                                         </div>
-                                        <h4 class="font-headline-sm text-[16px] text-on-surface font-semibold">
-                                            Masalah Koneksi WiFi Lantai 2
-                                        </h4>
-                                        <p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">
-                                            Sinyal sangat lemah di area sayap timur.
-                                        </p>
-                                    </div>
-                                    <div class="flex flex-col items-end gap-2">
-                                        <span class="font-label-sm text-label-sm text-outline">Kemarin, 14:15</span>
-                                        <button
-                                            class="bg-secondary text-on-secondary px-4 py-1.5 rounded-lg font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-colors shadow-sm active:scale-95 duration-150 mt-1">
-                                            Validasi &amp; Selesai
-                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- Report Item 3 -->
-                            <div
-                                class="border border-outline-variant rounded-lg p-4 flex flex-col gap-3 hover:bg-surface-container-low transition-colors group relative overflow-hidden">
-                                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-emerald-500"></div>
-                                <div class="flex justify-between items-start pl-2">
-                                    <div>
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="font-label-sm text-label-sm text-outline">#TK-2023-085</span>
-                                            <span
-                                                class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-label-sm text-[10px] uppercase font-bold">Completed</span>
-                                        </div>
-                                        <h4 class="font-headline-sm text-[16px] text-on-surface font-semibold">
-                                            Request Install Software Baru
-                                        </h4>
-                                        <p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">
-                                            Butuh instalasi aplikasi desain grafis untuk tim publikasi.
-                                        </p>
-                                        <div class="mt-1 flex items-center gap-1">
-                                            <span class="font-label-sm text-label-sm text-outline">Tanggal
-                                                Selesai:</span>
-                                            <span class="font-label-sm text-label-sm text-outline">12 Okt 2023</span>
-                                        </div>
-                                    </div>
-                                    <span class="font-label-sm text-label-sm text-outline">12 Okt 2023</span>
+                            @empty
+                                <div class="text-center py-8 text-on-surface-variant">
+                                    <span class="material-symbols-outlined text-4xl mb-2">inbox</span>
+                                    <p>Belum ada laporan.</p>
                                 </div>
-                            </div>
-                            <!-- Report Item 9 -->
-                            <div
-                                class="border border-outline-variant rounded-lg p-4 flex flex-col gap-3 hover:bg-surface-container-low transition-colors group relative overflow-hidden">
-                                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-emerald-500"></div>
-                                <div class="flex justify-between items-start pl-2">
-                                    <div>
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="font-label-sm text-label-sm text-outline">#TK-2023-065</span>
-                                            <span
-                                                class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-label-sm text-[10px] uppercase font-bold">Completed</span>
-                                        </div>
-                                        <h4 class="font-headline-sm text-[16px] text-on-surface font-semibold">
-                                            Update Antivirus Workstation
-                                        </h4>
-                                        <p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">
-                                            Pembaruan database antivirus pada 15 unit komputer di divisi keuangan.
-                                        </p>
-                                        <div class="mt-1 flex items-center gap-1">
-                                            <span class="font-label-sm text-label-sm text-outline">Tanggal
-                                                Selesai:</span>
-                                            <span class="font-label-sm text-label-sm text-outline">25 Sep 2023</span>
-                                        </div>
-                                    </div>
-                                    <span class="font-label-sm text-label-sm text-outline">25 Sep 2023</span>
-                                </div>
-                            </div>
-                            <!-- Report Item 10 -->
-                            <div
-                                class="border border-outline-variant rounded-lg p-4 flex flex-col gap-3 hover:bg-surface-container-low transition-colors group relative overflow-hidden">
-                                <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-amber-500"></div>
-                                <div class="flex justify-between items-start pl-2">
-                                    <div>
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="font-label-sm text-label-sm text-outline">#TK-2023-062</span>
-                                            <span
-                                                class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 font-label-sm text-[10px] uppercase font-bold">In
-                                                Progress</span>
-                                        </div>
-                                        <h4 class="font-headline-sm text-[16px] text-on-surface font-semibold">
-                                            Troubleshoot Scanner HRD
-                                        </h4>
-                                        <p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">
-                                            Scanner sering macet saat memproses dokumen lebih dari 5 lembar.
-                                        </p>
-                                    </div>
-                                    <span class="font-label-sm text-label-sm text-outline">20 Sep 2023</span>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     </main>
 </body>
 
 </html>
+</create_file>
