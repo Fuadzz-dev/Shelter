@@ -212,30 +212,28 @@
                             <div
                                 class="border-outline-variant flex overflow-hidden rounded-lg border"
                             >
-                                <button
-                                    class="bg-surface-container-high border-outline-variant border-r px-3 py-1.5 text-xs font-bold"
+                                <a
+                                    href="{{ route('pegawai.laporan-helpdesk', ['filter' => 'semua']) }}"
+                                    class="border-outline-variant inline-flex items-center gap-1.5 border-r px-3 py-1.5 text-xs transition-colors {{ ($filter ?? 'semua') === 'semua' ? 'bg-surface-container-high text-primary font-bold' : 'text-on-surface-variant font-medium hover:bg-surface-container-low' }}"
                                 >
                                     Semua
-                                </button>
-                                <button
-                                    class="hover:bg-surface-container-low border-outline-variant border-r px-3 py-1.5 text-xs font-medium"
+                                    <span class="rounded-full bg-surface-variant px-1.5 py-0.5 text-[10px] font-semibold leading-none {{ ($filter ?? 'semua') === 'semua' ? 'text-primary' : 'text-on-surface-variant' }}">{{ $jumlahSemua }}</span>
+                                </a>
+                                <a
+                                    href="{{ route('pegawai.laporan-helpdesk', ['filter' => 'aktif']) }}"
+                                    class="border-outline-variant inline-flex items-center gap-1.5 border-r px-3 py-1.5 text-xs transition-colors {{ ($filter ?? 'semua') === 'aktif' ? 'bg-surface-container-high text-primary font-bold' : 'text-on-surface-variant font-medium hover:bg-surface-container-low' }}"
                                 >
                                     Aktif
-                                </button>
-                                <button
-                                    class="hover:bg-surface-container-low px-3 py-1.5 text-xs font-medium"
+                                    <span class="rounded-full bg-surface-variant px-1.5 py-0.5 text-[10px] font-semibold leading-none {{ ($filter ?? 'semua') === 'aktif' ? 'text-primary' : 'text-on-surface-variant' }}">{{ $jumlahAktif }}</span>
+                                </a>
+                                <a
+                                    href="{{ route('pegawai.laporan-helpdesk', ['filter' => 'arsip']) }}"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors {{ ($filter ?? 'semua') === 'arsip' ? 'bg-surface-container-high text-primary font-bold' : 'text-on-surface-variant font-medium hover:bg-surface-container-low' }}"
                                 >
                                     Arsip
-                                </button>
+                                    <span class="rounded-full bg-surface-variant px-1.5 py-0.5 text-[10px] font-semibold leading-none {{ ($filter ?? 'semua') === 'arsip' ? 'text-primary' : 'text-on-surface-variant' }}">{{ $jumlahArsip }}</span>
+                                </a>
                             </div>
-                            <button
-                                class="border-outline-variant hover:bg-surface-container-low text-on-surface-variant flex items-center justify-center rounded-lg border p-2"
-                                title="Filter"
-                            >
-                                <span class="material-symbols-outlined text-sm"
-                                    >filter_list</span
-                                >
-                            </button>
                         </div>
                     </div>
 
@@ -298,17 +296,26 @@
                                         <span
                                             class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-tighter uppercase {{ $badgeClass }}"
                                         >
+                                        
                                             <span
                                                 class="h-1.5 w-1.5 rounded-full {{ $dotClass }}"
                                             ></span>{{ $laporan->status_Helpdesk }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <a href="{{ route('pegawai.laporan-helpdesk.detail', $laporan->id_helpdesk) }}"
-                                            class="font-bold text-secondary hover:underline"
-                                        >
-                                            Detail
-                                        </a>
+                                        <div class="flex items-center justify-end gap-2">
+                                            <a href="{{ route('pegawai.laporan-helpdesk.detail', $laporan->id_helpdesk) }}"
+                                                class="font-bold text-secondary hover:underline"
+                                            >
+                                                Detail
+                                            </a>
+                                            @if($laporan->status_Helpdesk === 'Waiting Approval')
+                                            <a href="{{ route('pegawai.laporan-helpdesk.validasi-digital', $laporan->id_helpdesk) }}"
+                                                class="bg-secondary text-on-secondary px-3 py-1.5 rounded-md font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-colors shadow-sm active:scale-95 duration-150 whitespace-nowrap">
+                                                Validasi &amp; Selesai
+                                            </a>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
@@ -322,14 +329,6 @@
                         </table>
                     </div>
 
-                    <!-- Pagination Footer -->
-                    <div
-                        class="bg-surface-container-lowest border-outline-variant font-label-md text-label-md flex flex-col items-center justify-between gap-4 border-t px-6 py-4 sm:flex-row"
-                    >
-                        <p class="text-on-surface-variant">
-                            Menampilkan {{ $laporans->count() }} laporan
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>

@@ -162,14 +162,19 @@
                 <h2 class="font-display-lg text-display-lg text-primary mb-1">
                     Riwayat Helpdesk (Selesai)
                 </h2>
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    Total {{ $riwayatHelpdesks->total() }} laporan selesai
+                </p>
             </div>
             <div class="flex gap-3">
-                <button
+                <a
+                    href="{{ route('admin.riwayat-helpdesk.export', request()->query()) }}"
                     class="h-[44px] px-4 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-label-md text-label-md flex items-center gap-2 hover:bg-surface-container-low transition-colors shadow-sm">
                     <span class="material-symbols-outlined text-lg">download</span>
                     Unduh CSV
-                </button>
+                </a>
                 <button
+                    onclick="window.print()"
                     class="h-[44px] px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
                     <span class="material-symbols-outlined text-lg">print</span>
                     Cetak Laporan
@@ -179,7 +184,10 @@
         <!-- Filter & Table Wrapper -->
         <div class="px-container-padding pb-stack-lg flex flex-col gap-6 flex-1">
             <!-- Filter Section (Glassmorphism/Clean Card) -->
-            <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-4">
+            <form
+                method="GET"
+                action="{{ route('admin.riwayat-helpdesk') }}"
+                class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-4">
                 <div class="flex items-center gap-2 mb-4">
                     <span class="material-symbols-outlined text-on-surface-variant">filter_list</span>
                     <h3 class="font-headline-sm text-headline-sm text-on-surface">
@@ -188,31 +196,45 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="flex flex-col gap-1">
-                        <label class="font-label-sm text-label-sm text-on-surface-variant">Tanggal Awal</label>
+                        <label class="font-label-sm text-label-sm text-on-surface-variant">Dari Tanggal</label>
                         <input
+                            name="tanggal_awal"
+                            value="{{ request('tanggal_awal') }}"
                             class="border border-outline-variant rounded-md p-2 font-body-md text-body-md bg-transparent focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors text-on-surface"
                             type="date" />
                     </div>
                     <div class="flex flex-col gap-1">
-                        <label class="font-label-sm text-label-sm text-on-surface-variant">Tanggal Akhir</label>
+                        <label class="font-label-sm text-label-sm text-on-surface-variant">Sampai Tanggal</label>
                         <input
+                            name="tanggal_akhir"
+                            value="{{ request('tanggal_akhir') }}"
                             class="border border-outline-variant rounded-md p-2 font-body-md text-body-md bg-transparent focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors text-on-surface"
                             type="date" />
                     </div>
                     <div class="flex flex-col gap-1">
-                        <label class="font-label-sm text-label-sm text-on-surface-variant">Nama Pelapor</label>
+                        <label class="font-label-sm text-label-sm text-on-surface-variant">Nama / NIP Pelapor</label>
                         <input
+                            name="cari"
+                            value="{{ request('cari') }}"
                             class="border border-outline-variant rounded-md p-2 font-body-md text-body-md bg-transparent focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors text-on-surface"
-                            placeholder="Masukkan Nama" type="text" />
+                            placeholder="Cari nama atau NIP pelapor" type="text" />
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="font-label-sm text-label-sm text-on-surface-variant">NIP Pelapor</label>
-                        <input
-                            class="border border-outline-variant rounded-md p-2 font-body-md text-body-md bg-transparent focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors text-on-surface"
-                            placeholder="Masukkan NIP" type="text" />
+                    <div class="flex items-end gap-2">
+                        <a
+                            href="{{ route('admin.riwayat-helpdesk') }}"
+                            class="h-[40px] flex-1 px-4 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors">
+                            <span class="material-symbols-outlined text-lg">restart_alt</span>
+                            Reset
+                        </a>
+                        <button
+                            type="submit"
+                            class="h-[40px] flex-1 px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
+                            <span class="material-symbols-outlined text-lg">search</span>
+                            Terapkan
+                        </button>
                     </div>
                 </div>
-            </div>
+            </form>
             <!-- Data Table Section -->
             <div
                 class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden flex-1 flex flex-col">
@@ -238,165 +260,72 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-outline-variant/50">
-                            <!-- Row 1 -->
-                            <tr class="hover:bg-surface-container-low transition-colors group cursor-default">
-                                <td class="py-3 px-4">
-                                    <div class="flex flex-col">
-                                        <span class="font-body-md text-body-md text-on-surface">Budi Santoso</span>
-                                        <span class="font-label-sm text-label-sm text-on-surface-variant">NIP:
-                                            198001012005011002</span>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 font-body-md text-body-md text-on-surface">
-                                    12 Nov 2023, 14:30
-                                </td>
-                                <td
-                                    class="py-3 px-4 font-body-md text-body-md text-on-surface-variant max-w-xs truncate">
-                                    Perbaikan konfigurasi jaringan LAN di
-                                    Ruang Rapat Utama. Kabel diganti dan
-                                    switch di-restart.
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <div
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-container">
-                                        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
-                                        <span class="font-label-sm text-label-sm font-bold">Valid</span>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <button
-                                        class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
-                                        Detail
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 2 -->
-                            <tr class="hover:bg-surface-container-low transition-colors group cursor-default">
-                                <td class="py-3 px-4">
-                                    <div class="flex flex-col">
-                                        <span class="font-body-md text-body-md text-on-surface">Siti Aminah</span>
-                                        <span class="font-label-sm text-label-sm text-on-surface-variant">NIP:
-                                            198502152010122001</span>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 font-body-md text-body-md text-on-surface">
-                                    10 Nov 2023, 09:15
-                                </td>
-                                <td
-                                    class="py-3 px-4 font-body-md text-body-md text-on-surface-variant max-w-xs truncate">
-                                    Instalasi ulang OS pada PC aset
-                                    IT-PC-045 karena error sistem operasi.
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <div
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-container">
-                                        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
-                                        <span class="font-label-sm text-label-sm font-bold">Valid</span>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <button
-                                        class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
-                                        Detail
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 3 -->
-                            <tr class="hover:bg-surface-container-low transition-colors group cursor-default">
-                                <td class="py-3 px-4">
-                                    <div class="flex flex-col">
-                                        <span class="font-body-md text-body-md text-on-surface">Andi Wijaya</span>
-                                        <span class="font-label-sm text-label-sm text-on-surface-variant">NIP:
-                                            199003202015031004</span>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 font-body-md text-body-md text-on-surface">
-                                    08 Nov 2023, 16:45
-                                </td>
-                                <td
-                                    class="py-3 px-4 font-body-md text-body-md text-on-surface-variant max-w-xs truncate">
-                                    Penggantian toner printer di ruang
-                                    administrasi dan pembersihan head
-                                    printer.
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <div
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-container">
-                                        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
-                                        <span class="font-label-sm text-label-sm font-bold">Valid</span>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <button
-                                        class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
-                                        Detail
-                                    </button>
-                                </td>
-                            </tr>
-                            <!-- Row 4 -->
-                            <tr class="hover:bg-surface-container-low transition-colors group cursor-default">
-                                <td class="py-3 px-4">
-                                    <div class="flex flex-col">
-                                        <span class="font-body-md text-body-md text-on-surface">Rina Mulyani</span>
-                                        <span class="font-label-sm text-label-sm text-on-surface-variant">NIP:
-                                            198807122012122003</span>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 font-body-md text-body-md text-on-surface">
-                                    05 Nov 2023, 11:20
-                                </td>
-                                <td
-                                    class="py-3 px-4 font-body-md text-body-md text-on-surface-variant max-w-xs truncate">
-                                    Reset password akun SIPEG dan
-                                    sinkronisasi data user.
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <div
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-container">
-                                        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
-                                        <span class="font-label-sm text-label-sm font-bold">Valid</span>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <button
-                                        class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
-                                        Detail
-                                    </button>
-                                </td>
-                            </tr>
+                            @forelse ($riwayatHelpdesks as $item)
+                                @php
+                                    $persetujuan = $item->persetujuanDigital->first();
+                                    $tindakan = $item->tindakanPerbaikan->first();
+                                    $waktuSelesai = $persetujuan?->waktu_persetujuan
+                                        ?? $item->riwayat->first()?->waktu_diselesaikan;
+                                    $statusValidasi = $persetujuan?->status_dokumen;
+                                @endphp
+                                <tr class="hover:bg-surface-container-low transition-colors group cursor-default">
+                                    <td class="py-3 px-4">
+                                        <div class="flex flex-col">
+                                            <span class="font-body-md text-body-md text-on-surface">{{ $item->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}</span>
+                                            <span class="font-label-sm text-label-sm text-on-surface-variant">{{ $item->pelapor?->nip ?? '-' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 font-body-md text-body-md text-on-surface">
+                                        {{ $waktuSelesai ? \Carbon\Carbon::parse($waktuSelesai)->translatedFormat('d M Y, H:i') : '-' }}
+                                    </td>
+                                    <td class="py-3 px-4 max-w-xs">
+                                        <p class="font-body-md text-body-md text-on-surface font-medium truncate">{{ $item->judul_masalah }}</p>
+                                    </td>
+                                    <td class="py-3 px-4 text-right">
+                                        @if ($statusValidasi === 'Valid')
+                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-container">
+                                                <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+                                                <span class="font-label-sm text-label-sm font-bold">Valid</span>
+                                            </div>
+                                        @elseif ($statusValidasi === 'Invalid')
+                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-error-container text-on-error-container">
+                                                <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+                                                <span class="font-label-sm text-label-sm font-bold">Invalid</span>
+                                            </div>
+                                        @else
+                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container text-on-surface-variant">
+                                                <span class="material-symbols-outlined text-[16px]">help</span>
+                                                <span class="font-label-sm text-label-sm font-bold">Belum Validasi</span>
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="py-3 px-4 text-right">
+                                        <a
+                                            href="{{ route('admin.riwayat-helpdesk.detail', $item->id_helpdesk) }}"
+                                            class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors inline-block">
+                                            Detail
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-4 py-12 text-center">
+                                        <div class="flex flex-col items-center gap-2 text-on-surface-variant">
+                                            <span class="material-symbols-outlined text-[48px]">history</span>
+                                            <p class="font-medium">Tidak ada riwayat helpdesk</p>
+                                            <p class="text-sm">Belum ada laporan helpdesk yang selesai.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
-                <!-- Pagination -->
-                <div
-                    class="border-t border-outline-variant p-4 flex items-center justify-between bg-surface-container-lowest">
-                    <span class="font-body-md text-body-md text-on-surface-variant">Menampilkan 1-4 dari 128
-                        riwayat</span>
-                    <div class="flex gap-2">
-                        <button
-                            class="w-8 h-8 rounded border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors disabled:opacity-50"
-                            disabled="">
-                            <span class="material-symbols-outlined text-sm">chevron_left</span>
-                        </button>
-                        <button
-                            class="w-8 h-8 rounded bg-primary text-on-primary flex items-center justify-center font-label-md text-label-md">
-                            1
-                        </button>
-                        <button
-                            class="w-8 h-8 rounded border border-outline-variant flex items-center justify-center text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md">
-                            2
-                        </button>
-                        <button
-                            class="w-8 h-8 rounded border border-outline-variant flex items-center justify-center text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md">
-                            3
-                        </button>
-                        <span class="w-8 h-8 flex items-center justify-center text-on-surface-variant">...</span>
-                        <button
-                            class="w-8 h-8 rounded border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors">
-                            <span class="material-symbols-outlined text-sm">chevron_right</span>
-                        </button>
+                @if ($riwayatHelpdesks->hasPages())
+                    <div class="px-4 py-3 border-t border-outline-variant/50">
+                        {{ $riwayatHelpdesks->links() }}
                     </div>
-                </div>
+                @endif
             </div>
         </div>
     </main>

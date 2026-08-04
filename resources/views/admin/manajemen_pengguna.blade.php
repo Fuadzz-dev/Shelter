@@ -4,6 +4,7 @@
         <meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
         <title>Manajemen Pengguna - SHELTER</title>
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
         <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
         <link
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
@@ -192,20 +193,11 @@
                         >search</span
                     >
                     <input
+                        id="searchInput"
                         class="border-outline-variant font-body-md text-body-md w-full rounded-lg border py-2.5 pr-4 pl-10 transition-all focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none"
                         placeholder="Cari berdasarkan Nama atau NIP..."
                         type="text"
                     />
-                </div>
-                <div class="flex w-full gap-2 sm:w-auto">
-                    <select
-                        class="border-outline-variant font-body-md text-body-md flex-1 rounded-lg border bg-white px-4 py-2.5 pr-[30px] focus:border-secondary focus:outline-none sm:flex-none"
-                    >
-                        <option value="">Semua Departemen</option>
-                        <option value="it">Teknologi Informasi</option>
-                        <option value="hr">SDM</option>
-                        <option value="ops">Operasional</option>
-                    </select>
                 </div>
             </div>
             <!-- Data Table (Glassmorphism inspired clean look) -->
@@ -259,804 +251,68 @@
                             id="userTableBody"
                             class="font-body-md text-body-md text-on-surface divide-outline-variant/30 divide-y"
                         >
-                            <!-- Row 1 -->
+                            @forelse($pengguna as $user)
                             <tr
                                 class="group transition-colors hover:bg-[#F1F5F9]"
-                                data-nip="19850312 201012 1 002"
-                                data-name="Budi Santoso"
-                                data-department="it"
-                                data-role="admin"
-                                data-status="active"
+                                data-user-id="{{ $user->user_id }}"
+                                data-nip="{{ $user->nip }}"
+                                data-name="{{ $user->nama_lengkap }}"
+                                data-department="{{ $user->jabatan_departemen }}"
+                                data-role="{{ $user->role }}"
+                                data-status="{{ $user->status ?? 'active' }}"
+                                data-email="{{ $user->email }}"
                             >
                                 <td class="text-on-surface-variant px-6 py-4">
-                                    19850312 201012 1 002
+                                    {{ $user->nip }}
                                 </td>
                                 <td class="px-6 py-4 font-medium text-primary">
-                                    Budi Santoso
+                                    {{ $user->nama_lengkap }}
                                 </td>
-                                <td class="px-6 py-4">Teknologi Informasi</td>
+                                <td class="px-6 py-4">{{ $user->jabatan_departemen }}</td>
                                 <td class="px-6 py-4">
-                                    <span
-                                        class="bg-primary-container/10 text-primary-container inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[14px]"
-                                            style="
-                                                font-variation-settings: 'FILL'
-                                                    1;
-                                            "
-                                            >shield_person</span
-                                        >
+                                    @if($user->role === 'admin')
+                                    <span class="bg-primary-container/10 text-primary-container inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold">
+                                        <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">shield_person</span>
                                         Admin
                                     </span>
-                                </td>
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    2 Hari yang lalu
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="inline-flex items-center rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2 py-1 text-[12px] font-semibold text-[#047857]"
-                                        >Active</span
-                                    >
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <button
-                                            type="button"
-                                            onclick="openEditModal(this)"
-                                            class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary"
-                                            title="Edit User"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >edit</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors"
-                                            title="Reset Password"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >lock_reset</span
-                                            >
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 2 -->
-                            <tr
-                                class="group transition-colors hover:bg-[#F1F5F9]"
-                                data-nip="19901124 201503 2 005"
-                                data-name="Siti Aminah"
-                                data-department="hr"
-                                data-role="user"
-                                data-status="active"
-                            >
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    19901124 201503 2 005
-                                </td>
-                                <td class="px-6 py-4 font-medium text-primary">
-                                    Siti Aminah
-                                </td>
-                                <td class="px-6 py-4">Sumber Daya Manusia</td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[14px]"
-                                            style="
-                                                font-variation-settings: 'FILL'
-                                                    0;
-                                            "
-                                            >person</span
-                                        >
+                                    @else
+                                    <span class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold">
+                                        <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 0">person</span>
                                         User
                                     </span>
+                                    @endif
                                 </td>
                                 <td class="text-on-surface-variant px-6 py-4">
-                                    Hari ini, 08:30
+                                    {{ $user->updated_at ? $user->updated_at->diffForHumans() : '-' }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span
-                                        class="inline-flex items-center rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2 py-1 text-[12px] font-semibold text-[#047857]"
-                                        >Active</span
-                                    >
+                                    @if(($user->status ?? 'active') === 'active')
+                                    <span class="inline-flex items-center rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2 py-1 text-[12px] font-semibold text-[#047857]">Active</span>
+                                    @else
+                                    <span class="bg-outline-variant/30 text-on-surface-variant border-outline-variant/50 inline-flex items-center rounded-md border px-2 py-1 text-[12px] font-semibold">Inactive</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <button
-                                            type="button"
-                                            onclick="openEditModal(this)"
-                                            class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary"
-                                            title="Edit User"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >edit</span
-                                            >
+                                    <div class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                                        <button type="button" onclick="openEditModal(this)" class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary" title="Edit User">
+                                            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0">edit</span>
                                         </button>
-                                        <button
-                                            class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors"
-                                            title="Reset Password"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >lock_reset</span
-                                            >
+<button type="button" onclick="resetPassword(this)" class="text-outline hover:bg-error/10 rounded-lg p-2 transition-colors hover:text-error" title="Reset Password">
+                                            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0">lock_reset</span>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                            <!-- Row 3 -->
-                            <tr
-                                class="group transition-colors hover:bg-[#F1F5F9]"
-                                data-nip="19880715 201210 1 001"
-                                data-name="Agus Pratama"
-                                data-department="ops"
-                                data-role="user"
-                                data-status="inactive"
-                            >
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    19880715 201210 1 001
-                                </td>
-                                <td class="px-6 py-4 font-medium text-primary">
-                                    Agus Pratama
-                                </td>
-                                <td class="px-6 py-4">Operasional</td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[14px]"
-                                            style="
-                                                font-variation-settings: 'FILL'
-                                                    0;
-                                            "
-                                            >person</span
-                                        >
-                                        User
-                                    </span>
-                                </td>
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    1 Bulan yang lalu
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-outline-variant/30 text-on-surface-variant border-outline-variant/50 inline-flex items-center rounded-md border px-2 py-1 text-[12px] font-semibold"
-                                        >Inactive</span
-                                    >
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <button
-                                            type="button"
-                                            onclick="openEditModal(this)"
-                                            class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary"
-                                            title="Edit User"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >edit</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors"
-                                            title="Reset Password"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >lock_reset</span
-                                            >
-                                        </button>
-                                    </div>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="text-on-surface-variant px-6 py-12 text-center">
+                                    <span class="material-symbols-outlined text-4xl mb-4 block" style="font-variation-settings: 'FILL' 0">group_off</span>
+                                    Belum ada pengguna terdaftar.
                                 </td>
                             </tr>
-                            <!-- Row 4 -->
-                            <tr
-                                class="group transition-colors hover:bg-[#F1F5F9]"
-                                data-nip="19920415 201801 2 003"
-                                data-name="Dewi Lestari"
-                                data-department="finance"
-                                data-role="user"
-                                data-status="active"
-                            >
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    19920415 201801 2 003
-                                </td>
-                                <td class="px-6 py-4 font-medium text-primary">
-                                    Dewi Lestari
-                                </td>
-                                <td class="px-6 py-4">Keuangan</td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[14px]"
-                                            style="
-                                                font-variation-settings: 'FILL'
-                                                    0;
-                                            "
-                                            >person</span
-                                        >
-                                        User
-                                    </span>
-                                </td>
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    Kemarin, 14:20
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="inline-flex items-center rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2 py-1 text-[12px] font-semibold text-[#047857]"
-                                        >Active</span
-                                    >
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <button
-                                            type="button"
-                                            onclick="openEditModal(this)"
-                                            class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary"
-                                            title="Edit User"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >edit</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors"
-                                            title="Reset Password"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >lock_reset</span
-                                            >
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 5 -->
-                            <tr
-                                class="group transition-colors hover:bg-[#F1F5F9]"
-                                data-nip="19871102 201112 1 008"
-                                data-name="Rian Hidayat"
-                                data-department="ops"
-                                data-role="user"
-                                data-status="inactive"
-                            >
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    19871102 201112 1 008
-                                </td>
-                                <td class="px-6 py-4 font-medium text-primary">
-                                    Rian Hidayat
-                                </td>
-                                <td class="px-6 py-4">Operasional</td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[14px]"
-                                            style="
-                                                font-variation-settings: 'FILL'
-                                                    0;
-                                            "
-                                            >person</span
-                                        >
-                                        User
-                                    </span>
-                                </td>
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    3 Hari yang lalu
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-outline-variant/30 text-on-surface-variant border-outline-variant/50 inline-flex items-center rounded-md border px-2 py-1 text-[12px] font-semibold"
-                                        >Inactive</span
-                                    >
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <button
-                                            type="button"
-                                            onclick="openEditModal(this)"
-                                            class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary"
-                                            title="Edit User"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >edit</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors"
-                                            title="Reset Password"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >lock_reset</span
-                                            >
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 6 -->
-                            <tr
-                                class="group transition-colors hover:bg-[#F1F5F9]"
-                                data-nip="19950820 202001 2 012"
-                                data-name="Siska Putri"
-                                data-department="it"
-                                data-role="user"
-                                data-status="active"
-                            >
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    19950820 202001 2 012
-                                </td>
-                                <td class="px-6 py-4 font-medium text-primary">
-                                    Siska Putri
-                                </td>
-                                <td class="px-6 py-4">Teknologi Informasi</td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[14px]"
-                                            style="
-                                                font-variation-settings: 'FILL'
-                                                    0;
-                                            "
-                                            >person</span
-                                        >
-                                        User
-                                    </span>
-                                </td>
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    Hari ini, 10:15
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="inline-flex items-center rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2 py-1 text-[12px] font-semibold text-[#047857]"
-                                        >Active</span
-                                    >
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <button
-                                            type="button"
-                                            onclick="openEditModal(this)"
-                                            class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary"
-                                            title="Edit User"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >edit</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors"
-                                            title="Reset Password"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >lock_reset</span
-                                            >
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 7 -->
-                            <tr
-                                class="group transition-colors hover:bg-[#F1F5F9]"
-                                data-nip="19820130 200512 1 001"
-                                data-name="Bambang Wijaya"
-                                data-department="security"
-                                data-role="admin"
-                                data-status="active"
-                            >
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    19820130 200512 1 001
-                                </td>
-                                <td class="px-6 py-4 font-medium text-primary">
-                                    Bambang Wijaya
-                                </td>
-                                <td class="px-6 py-4">Keamanan</td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-primary-container/10 text-primary-container inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[14px]"
-                                            style="
-                                                font-variation-settings: 'FILL'
-                                                    1;
-                                            "
-                                            >shield_person</span
-                                        >
-                                        Admin
-                                    </span>
-                                </td>
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    5 Hari yang lalu
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="inline-flex items-center rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2 py-1 text-[12px] font-semibold text-[#047857]"
-                                        >Active</span
-                                    >
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <button
-                                            type="button"
-                                            onclick="openEditModal(this)"
-                                            class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary"
-                                            title="Edit User"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >edit</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors"
-                                            title="Reset Password"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >lock_reset</span
-                                            >
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 8 -->
-                            <tr
-                                class="group transition-colors hover:bg-[#F1F5F9]"
-                                data-nip="19940612 201903 2 009"
-                                data-name="Indah Permata"
-                                data-department="finance"
-                                data-role="user"
-                                data-status="inactive"
-                            >
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    19940612 201903 2 009
-                                </td>
-                                <td class="px-6 py-4 font-medium text-primary">
-                                    Indah Permata
-                                </td>
-                                <td class="px-6 py-4">Keuangan</td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[14px]"
-                                            style="
-                                                font-variation-settings: 'FILL'
-                                                    0;
-                                            "
-                                            >person</span
-                                        >
-                                        User
-                                    </span>
-                                </td>
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    2 Minggu yang lalu
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-outline-variant/30 text-on-surface-variant border-outline-variant/50 inline-flex items-center rounded-md border px-2 py-1 text-[12px] font-semibold"
-                                        >Inactive</span
-                                    >
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <button
-                                            type="button"
-                                            onclick="openEditModal(this)"
-                                            class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary"
-                                            title="Edit User"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >edit</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors"
-                                            title="Reset Password"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >lock_reset</span
-                                            >
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 9 -->
-                            <tr
-                                class="group transition-colors hover:bg-[#F1F5F9]"
-                                data-nip="19890925 201310 1 004"
-                                data-name="Fajar Ramadhan"
-                                data-department="ops"
-                                data-role="user"
-                                data-status="active"
-                            >
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    19890925 201310 1 004
-                                </td>
-                                <td class="px-6 py-4 font-medium text-primary">
-                                    Fajar Ramadhan
-                                </td>
-                                <td class="px-6 py-4">Operasional</td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[14px]"
-                                            style="
-                                                font-variation-settings: 'FILL'
-                                                    0;
-                                            "
-                                            >person</span
-                                        >
-                                        User
-                                    </span>
-                                </td>
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    Hari ini, 07:45
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="inline-flex items-center rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2 py-1 text-[12px] font-semibold text-[#047857]"
-                                        >Active</span
-                                    >
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <button
-                                            type="button"
-                                            onclick="openEditModal(this)"
-                                            class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary"
-                                            title="Edit User"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >edit</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors"
-                                            title="Reset Password"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >lock_reset</span
-                                            >
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 10 -->
-                            <tr
-                                class="group transition-colors hover:bg-[#F1F5F9]"
-                                data-nip="19911205 201603 2 007"
-                                data-name="Maya Sari"
-                                data-department="security"
-                                data-role="user"
-                                data-status="active"
-                            >
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    19911205 201603 2 007
-                                </td>
-                                <td class="px-6 py-4 font-medium text-primary">
-                                    Maya Sari
-                                </td>
-                                <td class="px-6 py-4">Keamanan</td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    >
-                                        <span
-                                            class="material-symbols-outlined text-[14px]"
-                                            style="
-                                                font-variation-settings: 'FILL'
-                                                    0;
-                                            "
-                                            >person</span
-                                        >
-                                        User
-                                    </span>
-                                </td>
-                                <td class="text-on-surface-variant px-6 py-4">
-                                    1 Hari yang lalu
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="inline-flex items-center rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2 py-1 text-[12px] font-semibold text-[#047857]"
-                                        >Active</span
-                                    >
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
-                                    >
-                                        <button
-                                            type="button"
-                                            onclick="openEditModal(this)"
-                                            class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary"
-                                            title="Edit User"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >edit</span
-                                            >
-                                        </button>
-                                        <button
-                                            class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors"
-                                            title="Reset Password"
-                                        >
-                                            <span
-                                                class="material-symbols-outlined text-[20px]"
-                                                style="
-                                                    font-variation-settings: 'FILL'
-                                                        0;
-                                                "
-                                                >lock_reset</span
-                                            >
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
-                </div>
-                <!-- Pagination Footer -->
-                <div
-                    class="bg-surface-container-lowest border-outline-variant/30 flex items-center justify-between border-t px-6 py-4"
-                >
-                    <span
-                        id="userCountText"
-                        class="font-body-md text-body-md text-on-surface-variant"
-                        >Menampilkan 1-10 dari 45 pengguna</span
-                    >
-                    <div class="flex items-center gap-2">
-                        <button
-                            class="border-outline-variant text-on-surface-variant hover:bg-surface-container-low flex h-8 w-8 items-center justify-center rounded border transition-colors disabled:opacity-50"
-                            disabled=""
-                        >
-                            <span
-                                class="material-symbols-outlined text-sm"
-                                style="font-variation-settings: 'FILL' 0"
-                                >chevron_left</span
-                            >
-                        </button>
-                        <button
-                            class="bg-primary-container text-on-primary font-label-md flex h-8 w-8 items-center justify-center rounded"
-                        >
-                            1
-                        </button>
-                        <button
-                            class="border-outline-variant text-on-surface-variant hover:bg-surface-container-low font-label-md flex h-8 w-8 items-center justify-center rounded border transition-colors"
-                        >
-                            2
-                        </button>
-                        <button
-                            class="border-outline-variant text-on-surface-variant hover:bg-surface-container-low font-label-md flex h-8 w-8 items-center justify-center rounded border transition-colors"
-                        >
-                            3
-                        </button>
-                        <button
-                            class="border-outline-variant text-on-surface-variant hover:bg-surface-container-low flex h-8 w-8 items-center justify-center rounded border transition-colors"
-                        >
-                            <span
-                                class="material-symbols-outlined text-sm"
-                                style="font-variation-settings: 'FILL' 0"
-                                >chevron_right</span
-                            >
-                        </button>
-                    </div>
                 </div>
             </div>
             </div>
@@ -1105,6 +361,7 @@
                     class="p-container-padding gap-stack-lg grid grid-cols-1 md:grid-cols-2"
                     onsubmit="return submitAddUser(event);"
                 >
+                    <div id="addFormError" class="hidden col-span-1 md:col-span-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
                     <!-- NIP -->
                     <div class="gap-stack-sm flex flex-col">
                         <label
@@ -1146,6 +403,24 @@
                         />
                     </div>
 
+                    <!-- Email -->
+                    <div class="gap-stack-sm flex flex-col">
+                        <label
+                            class="text-label-md font-label-md text-on-surface"
+                            for="addEmail"
+                        >
+                            Email Address <span class="text-error">*</span>
+                        </label>
+                        <input
+                            class="px-gutter bg-surface-container-lowest border-outline text-body-md font-body-md placeholder:text-outline/70 rounded-lg border py-3 transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/20 focus:outline-none"
+                            id="addEmail"
+                            name="email"
+                            placeholder="e.g. budi.santoso@example.com"
+                            type="email"
+                            required
+                        />
+                    </div>
+
                     <!-- Department -->
                     <div class="gap-stack-sm flex flex-col">
                         <label
@@ -1154,23 +429,14 @@
                         >
                             Department <span class="text-error">*</span>
                         </label>
-                        <div class="relative">
-                            <select
-                                class="px-gutter bg-surface-container-lowest border-outline text-body-md font-body-md w-full appearance-none rounded-lg border py-3 transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/20 focus:outline-none"
-                                id="addDepartment"
-                                name="department"
-                                required
-                            >
-                                <option disabled selected value="">
-                                    Select Department
-                                </option>
-                                <option value="it">Teknologi Informasi</option>
-                                <option value="hr">Sumber Daya Manusia</option>
-                                <option value="ops">Operasional</option>
-                                <option value="security">Keamanan</option>
-                                <option value="finance">Keuangan</option>
-                            </select>
-                        </div>
+                        <input
+                            class="px-gutter bg-surface-container-lowest border-outline text-body-md font-body-md placeholder:text-outline/70 rounded-lg border py-3 transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/20 focus:outline-none"
+                            id="addDepartment"
+                            name="department"
+                            placeholder="e.g. Teknologi Informasi"
+                            type="text"
+                            required
+                        />
                     </div>
 
                     <!-- Role -->
@@ -1192,7 +458,6 @@
                                     Select Role
                                 </option>
                                 <option value="admin">Administrator</option>
-                                <option value="technician">Technician</option>
                                 <option value="user">User</option>
                             </select>
                         </div>
@@ -1268,6 +533,7 @@
                     class="p-container-padding gap-stack-lg grid grid-cols-1 md:grid-cols-2"
                     onsubmit="return submitEditUser(event);"
                 >
+                    <div id="editFormError" class="hidden col-span-1 md:col-span-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
                     <!-- NIP -->
                     <div class="gap-stack-sm flex flex-col">
                         <label
@@ -1310,6 +576,24 @@
                         />
                     </div>
 
+                    <!-- Email -->
+                    <div class="gap-stack-sm flex flex-col">
+                        <label
+                            class="text-label-md font-label-md text-on-surface"
+                            for="editEmail"
+                        >
+                            Email Address <span class="text-error">*</span>
+                        </label>
+                        <input
+                            class="px-gutter bg-surface-container-lowest border-outline text-body-md font-body-md placeholder:text-outline/70 rounded-lg border py-3 transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/20 focus:outline-none"
+                            id="editEmail"
+                            name="email"
+                            placeholder="e.g. budi.santoso@example.com"
+                            type="email"
+                            required
+                        />
+                    </div>
+
                     <!-- Department -->
                     <div class="gap-stack-sm flex flex-col">
                         <label
@@ -1318,20 +602,14 @@
                         >
                             Departemen <span class="text-error">*</span>
                         </label>
-                        <div class="relative">
-                            <select
-                                class="px-gutter bg-surface-container-lowest border-outline text-body-md font-body-md w-full appearance-none rounded-lg border py-3 transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/20 focus:outline-none"
-                                id="editDepartment"
-                                name="department"
-                                required
-                            >
-                                <option value="it">Teknologi Informasi</option>
-                                <option value="hr">Sumber Daya Manusia</option>
-                                <option value="ops">Operasional</option>
-                                <option value="security">Keamanan</option>
-                                <option value="finance">Keuangan</option>
-                            </select>
-                        </div>
+                        <input
+                            class="px-gutter bg-surface-container-lowest border-outline text-body-md font-body-md placeholder:text-outline/70 rounded-lg border py-3 transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/20 focus:outline-none"
+                            id="editDepartment"
+                            name="department"
+                            placeholder="e.g. Teknologi Informasi"
+                            type="text"
+                            required
+                        />
                     </div>
 
                     <!-- Role -->
@@ -1350,7 +628,6 @@
                                 required
                             >
                                 <option value="admin">Administrator</option>
-                                <option value="technician">Technician</option>
                                 <option value="user">User</option>
                             </select>
                         </div>
@@ -1417,11 +694,211 @@
         </div>
 
         <!-- ============================================= -->
-        <!-- Script: Logika buka/tutup modal + sinkronisasi data tabel -->
+        <!-- Modal: Konfirmasi Reset Password -->
+        <!-- ============================================= -->
+        <div
+            id="resetConfirmModal"
+            class="fixed inset-0 z-[60] hidden items-center justify-center bg-[#10202d]/60 p-4 backdrop-blur-[2px]"
+        >
+            <div
+                class="bg-surface-container-lowest border-outline-variant w-full max-w-md animate-modal-pop overflow-hidden rounded-2xl border shadow-[0_24px_64px_rgba(0,51,102,0.28)]"
+            >
+                <!-- Header accent -->
+                <div class="bg-error/10 flex items-center justify-center px-6 pt-8 pb-2">
+                    <div
+                        class="bg-error-container text-on-error-container flex h-16 w-16 -rotate-6 items-center justify-center rounded-2xl shadow-lg ring-8 ring-error/10"
+                    >
+                        <span
+                            class="material-symbols-outlined text-[32px]"
+                            style="font-variation-settings: 'FILL' 1"
+                            >lock_reset</span
+                        >
+                    </div>
+                </div>
+
+                <div class="px-7 py-6 text-center">
+                    <h3
+                        class="text-headline-sm font-headline-sm text-on-surface mb-1"
+                    >
+                        Reset Password?
+                    </h3>
+                    <p class="text-body-md font-body-md text-on-surface-variant mb-4">
+                        Password akun
+                        <span
+                            id="resetConfirmName"
+                            class="text-primary font-semibold"
+                        ></span>
+                        akan direset menjadi password default
+                    </p>
+
+                    <div class="flex items-center justify-end gap-3">
+                        <button
+                            type="button"
+                            onclick="closeResetConfirm()"
+                            class="px-container-padding text-body-md font-label-md border-outline-variant hover:bg-surface-container-high flex h-[44px] cursor-pointer items-center justify-center rounded-lg border font-semibold text-primary transition-colors"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            type="button"
+                            id="resetConfirmButton"
+                            onclick="confirmResetPassword()"
+                            class="px-container-padding text-body-md font-label-md text-on-error flex h-[44px] cursor-pointer items-center justify-center gap-2 rounded-lg bg-error font-semibold shadow-sm transition-colors hover:bg-error/90"
+                        >
+                            <span
+                                class="material-symbols-outlined text-[18px]"
+                                style="font-variation-settings: 'FILL' 1"
+                                >lock_reset</span
+                            >
+                            Ya, Reset Password
+                        </button>
+                    </div>
+</div>
+</div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- Modal: Sukses Reset Password -->
+        <!-- ============================================= -->
+        <div
+            id="resetSuccessModal"
+            class="fixed inset-0 z-[70] hidden items-center justify-center bg-[#10202d]/60 p-4 backdrop-blur-[2px]"
+        >
+            <div
+                class="bg-surface-container-lowest border-outline-variant w-full max-w-md animate-modal-pop overflow-hidden rounded-2xl border shadow-[0_24px_64px_rgba(0,51,102,0.28)]"
+            >
+                <!-- Header accent -->
+                <div class="bg-[#10b981]/10 flex items-center justify-center px-6 pt-8 pb-2">
+                    <div
+                        class="bg-[#10b981]/10 text-[#047857] flex h-16 w-16 -rotate-6 items-center justify-center rounded-2xl shadow-lg ring-8 ring-[#10b981]/10"
+                    >
+                        <span
+                            class="material-symbols-outlined text-[32px]"
+                            style="font-variation-settings: 'FILL' 1"
+                            >check_circle</span
+                        >
+                    </div>
+                </div>
+
+                <div class="px-7 py-6 text-center">
+                    <h3
+                        class="text-headline-sm font-headline-sm text-on-surface mb-1"
+                    >
+                        Password Berhasil Direset
+                    </h3>
+                    <p class="text-body-md font-body-md text-on-surface-variant mb-4">
+                        Password akun
+                        <span
+                            id="resetSuccessName"
+                            class="text-primary font-semibold"
+                        ></span>
+                        berhasil direset ke password default.
+                    </p>
+
+                    <div class="flex items-center justify-end gap-3">
+                        <button
+                            type="button"
+                            onclick="closeResetSuccess()"
+                            class="px-container-padding text-body-md font-label-md text-on-primary flex h-[44px] cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary font-semibold shadow-sm transition-colors hover:bg-primary/90"
+                        >
+                            <span
+                                class="material-symbols-outlined text-[18px]"
+                                style="font-variation-settings: 'FILL' 1"
+                                >check</span
+                            >
+                            Selesai
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- Modal: Konfirmasi Suspend Akun -->
+        <!-- ============================================= -->
+        <div
+            id="suspendConfirmModal"
+            class="fixed inset-0 z-[60] hidden items-center justify-center bg-[#10202d]/60 p-4 backdrop-blur-[2px]"
+        >
+            <div
+                class="bg-surface-container-lowest border-outline-variant w-full max-w-md animate-modal-pop overflow-hidden rounded-2xl border shadow-[0_24px_64px_rgba(0,51,102,0.28)]"
+            >
+                <!-- Header accent -->
+                <div class="bg-error/10 flex items-center justify-center px-6 pt-8 pb-2">
+                    <div
+                        class="bg-error-container text-on-error-container flex h-16 w-16 -rotate-6 items-center justify-center rounded-2xl shadow-lg ring-8 ring-error/10"
+                    >
+                        <span
+                            class="material-symbols-outlined text-[32px]"
+                            style="font-variation-settings: 'FILL' 1"
+                            >block</span
+                        >
+                    </div>
+                </div>
+
+                <div class="px-7 py-6 text-center">
+                    <h3
+                        class="text-headline-sm font-headline-sm text-on-surface mb-1"
+                    >
+                        Suspend Akun?
+                    </h3>
+                    <p class="text-body-md font-body-md text-on-surface-variant mb-4">
+                        Akun
+                        <span
+                            id="suspendConfirmName"
+                            class="text-primary font-semibold"
+                        ></span>
+                        akan dinonaktifkan (Suspended). Pengguna tidak dapat login
+                        sampai akun diaktifkan kembali.
+                    </p>
+
+                    <div class="flex items-center justify-end gap-3">
+                        <button
+                            type="button"
+                            onclick="closeSuspendConfirm()"
+                            class="px-container-padding text-body-md font-label-md border-outline-variant hover:bg-surface-container-high flex h-[44px] cursor-pointer items-center justify-center rounded-lg border font-semibold text-primary transition-colors"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            type="button"
+                            id="suspendConfirmButton"
+                            onclick="confirmSuspend()"
+                            class="px-container-padding text-body-md font-label-md text-on-error flex h-[44px] cursor-pointer items-center justify-center gap-2 rounded-lg bg-error font-semibold shadow-sm transition-colors hover:bg-error/90"
+                        >
+                            <span
+                                class="material-symbols-outlined text-[18px]"
+                                style="font-variation-settings: 'FILL' 1"
+                                >block</span
+                            >
+                            Ya, Suspend Akun
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            @keyframes modal-pop {
+                from {
+                    opacity: 0;
+                    transform: translateY(12px) scale(0.96);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            .animate-modal-pop {
+                animation: modal-pop 0.2s ease-out;
+            }
+        </style>
+
+        <!-- ============================================= -->
+        <!-- Script: Logika buka/tutup modal + AJAX ke backend -->
         <!-- ============================================= -->
         <script>
             let editingRow = null;
-            let totalUsers = 45;
 
             // Label & badge yang dipakai untuk menulis ulang isi baris tabel
             const departmentLabels = {
@@ -1434,8 +911,6 @@
 
             const roleBadges = {
                 admin: '<span class="bg-primary-container/10 text-primary-container inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: \'FILL\' 1">shield_person</span>Admin</span>',
-                technician:
-                    '<span class="bg-secondary-container/20 text-secondary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: \'FILL\' 0">build</span>Technician</span>',
                 user: '<span class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings: \'FILL\' 0">person</span>User</span>',
             };
 
@@ -1445,9 +920,59 @@
                     '<span class="bg-outline-variant/30 text-on-surface-variant border-outline-variant/50 inline-flex items-center rounded-md border px-2 py-1 text-[12px] font-semibold">Inactive</span>',
             };
 
-            // ---------- Modal: Add New User ----------
+            // ========== Utility: get CSRF token ==========
+            function getCsrfToken() {
+                const meta = document.querySelector('meta[name="csrf-token"]');
+                return meta ? meta.getAttribute('content') : '';
+            }
+
+            // ========== Search: filter by Nama atau NIP ==========
+            function filterPengguna() {
+                const input = document.getElementById('searchInput');
+                const query = (input ? input.value : '').trim().toLowerCase();
+                const tbody = document.getElementById('userTableBody');
+                if (!tbody) return;
+
+                const rows = tbody.querySelectorAll('tr[data-user-id]');
+                let visibleCount = 0;
+
+                rows.forEach(function (row) {
+                    const nama = (row.dataset.name || '').toLowerCase();
+                    const nip = (row.dataset.nip || '').toLowerCase();
+                    const match = !query || nama.includes(query) || nip.includes(query);
+                    row.style.display = match ? '' : 'none';
+                    if (match) visibleCount++;
+                });
+
+                // Tampilkan pesan "tidak ditemukan" jika hasil kosong
+                let emptyRow = document.getElementById('searchEmptyRow');
+                if (visibleCount === 0 && rows.length > 0) {
+                    if (!emptyRow) {
+                        emptyRow = document.createElement('tr');
+                        emptyRow.id = 'searchEmptyRow';
+                        emptyRow.innerHTML =
+                            '<td colspan="7" class="text-on-surface-variant px-6 py-12 text-center">' +
+                            '<span class="material-symbols-outlined text-4xl mb-4 block" style="font-variation-settings: \'FILL\' 0">search_off</span>' +
+                            'Tidak ada pengguna yang cocok dengan pencarian "<span id="searchEmptyQuery"></span>".' +
+                            '</td>';
+                        tbody.appendChild(emptyRow);
+                    }
+                    emptyRow.style.display = '';
+                    document.getElementById('searchEmptyQuery').textContent = input ? input.value.trim() : '';
+                } else if (emptyRow) {
+                    emptyRow.style.display = 'none';
+                }
+            }
+
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', filterPengguna);
+            }
+
+            // ========== Modal: Add New User ==========
             function openAddModal() {
                 document.getElementById('addUserForm').reset();
+                document.getElementById('addFormError').classList.add('hidden');
                 const modal = document.getElementById('addUserModal');
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
@@ -1463,70 +988,58 @@
                 event.preventDefault();
 
                 const nip = document.getElementById('addNip').value.trim();
-                const fullName = document
-                    .getElementById('addFullName')
-                    .value.trim();
-                const department =
-                    document.getElementById('addDepartment').value;
+                const fullName = document.getElementById('addFullName').value.trim();
+                const email = document.getElementById('addEmail').value.trim();
+                const department = document.getElementById('addDepartment').value;
                 const role = document.getElementById('addRole').value;
+                const errorEl = document.getElementById('addFormError');
 
-                if (!nip || !fullName || !department || !role) {
-                    alert('Mohon lengkapi semua kolom yang wajib diisi.');
+                if (!nip || !fullName || !email || !department || !role) {
+                    errorEl.textContent = 'Mohon lengkapi semua kolom yang wajib diisi.';
+                    errorEl.classList.remove('hidden');
                     return false;
                 }
 
-                const tr = document.createElement('tr');
-                tr.className = 'group transition-colors hover:bg-[#F1F5F9]';
-                tr.dataset.nip = nip;
-                tr.dataset.name = fullName;
-                tr.dataset.department = department;
-                tr.dataset.role = role;
-                tr.dataset.status = 'active';
+                fetch('{{ route("admin.manajemen-pengguna.store") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ nip, fullName, email, department, role }),
+                })
+                .then(response => response.json().then(data => ({ status: response.status, data })))
+                .then(({ status, data }) => {
+                    if (status === 201) {
+                        window.location.reload();
+                    } else {
+                        const errors = data.errors || {};
+                        const messages = Object.values(errors).flat().join('\n');
+                        errorEl.textContent = messages || 'Gagal menambahkan pengguna.';
+                        errorEl.classList.remove('hidden');
+                    }
+                })
+                .catch(() => {
+                    errorEl.textContent = 'Terjadi kesalahan jaringan.';
+                    errorEl.classList.remove('hidden');
+                });
 
-                tr.innerHTML = `
-                <td class="text-on-surface-variant px-6 py-4">${nip}</td>
-                <td class="px-6 py-4 font-medium text-primary">${fullName}</td>
-                <td class="px-6 py-4">${departmentLabels[department] || department}</td>
-                <td class="px-6 py-4">${roleBadges[role] || ''}</td>
-                <td class="text-on-surface-variant px-6 py-4">Baru saja</td>
-                <td class="px-6 py-4">${statusBadges.active}</td>
-                <td class="px-6 py-4 text-right">
-                    <div class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                        <button type="button" onclick="openEditModal(this)" class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary" title="Edit User">
-                            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0">edit</span>
-                        </button>
-                        <button type="button" class="text-outline hover:text-error hover:bg-error-container/50 rounded-lg p-2 transition-colors" title="Reset Password">
-                            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0">lock_reset</span>
-                        </button>
-                    </div>
-                </td>
-            `;
-
-                document.getElementById('userTableBody').appendChild(tr);
-
-                totalUsers++;
-                document.getElementById('userCountText').textContent =
-                    `Menampilkan 1-10 dari ${totalUsers} pengguna`;
-
-                closeAddModal();
                 return false;
             }
 
-            // ---------- Modal: Edit User ----------
+            // ========== Modal: Edit User ==========
             function openEditModal(button) {
                 const row = button.closest('tr');
                 editingRow = row;
 
-                document.getElementById('editNip').value =
-                    row.dataset.nip || '';
-                document.getElementById('editFullName').value =
-                    row.dataset.name || '';
-                document.getElementById('editDepartment').value =
-                    row.dataset.department || '';
-                document.getElementById('editRole').value =
-                    row.dataset.role || '';
-                document.getElementById('editStatusToggle').checked =
-                    row.dataset.status === 'active';
+                document.getElementById('editNip').value = row.dataset.nip || '';
+                document.getElementById('editFullName').value = row.dataset.name || '';
+                document.getElementById('editEmail').value = row.dataset.email || '';
+                document.getElementById('editDepartment').value = row.dataset.department || '';
+                document.getElementById('editRole').value = row.dataset.role || '';
+                document.getElementById('editStatusToggle').checked = row.dataset.status === 'active';
+                document.getElementById('editFormError').classList.add('hidden');
 
                 const modal = document.getElementById('editUserModal');
                 modal.classList.remove('hidden');
@@ -1544,53 +1057,226 @@
                 event.preventDefault();
                 if (!editingRow) return false;
 
-                const fullName = document
-                    .getElementById('editFullName')
-                    .value.trim();
-                const department =
-                    document.getElementById('editDepartment').value;
+                const userId = editingRow.dataset.userId;
+                const fullName = document.getElementById('editFullName').value.trim();
+                const department = document.getElementById('editDepartment').value;
                 const role = document.getElementById('editRole').value;
-                const status = document.getElementById('editStatusToggle')
-                    .checked
-                    ? 'active'
-                    : 'inactive';
+                const newStatus = document.getElementById('editStatusToggle').checked ? 'active' : 'inactive';
+                const errorEl = document.getElementById('editFormError');
 
                 if (!fullName) {
-                    alert('Nama lengkap tidak boleh kosong.');
+                    errorEl.textContent = 'Nama lengkap tidak boleh kosong.';
+                    errorEl.classList.remove('hidden');
                     return false;
                 }
 
-                editingRow.dataset.name = fullName;
-                editingRow.dataset.department = department;
-                editingRow.dataset.role = role;
-                editingRow.dataset.status = status;
+                // Update user data
+                fetch('{{ url("/admin/manajemen-pengguna") }}/' + userId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ fullName, department, role }),
+                })
+                .then(response => response.json().then(data => ({ httpStatus: response.status, data })))
+                .then(({ httpStatus, data }) => {
+                    if (httpStatus === 200) {
+                        // Update status separately if changed
+                        const oldStatus = editingRow.dataset.status;
+                        if (oldStatus !== newStatus) {
+                            return fetch('{{ url("/admin/manajemen-pengguna") }}/' + userId + '/status', {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': getCsrfToken(),
+                                    'Accept': 'application/json',
+                                },
+                                body: JSON.stringify({ status: newStatus }),
+                            });
+                        }
+                        // Status tidak berubah -> lanjut reload
+                        return null;
+                    } else {
+                        const errors = data.errors || {};
+                        const messages = Object.values(errors).flat().join('\n');
+                        errorEl.textContent = messages || 'Gagal memperbarui pengguna.';
+                        errorEl.classList.remove('hidden');
+                        throw new Error('Update failed');
+                    }
+                })
+                .then(response => {
+                    if (response) return response.json().then(data => ({ httpStatus: response.status, data }));
+                    return null;
+                })
+                .then(result => {
+                    // Jika status ikut diubah tapi update status gagal
+                    if (result && result.httpStatus !== 200) {
+                        const errors = result.data.errors || {};
+                        const messages = Object.values(errors).flat().join('\n');
+                        errorEl.textContent = messages || 'Gagal memperbarui status akun.';
+                        errorEl.classList.remove('hidden');
+                        throw new Error('Status update failed');
+                    }
+                    window.location.reload();
+                })
+                .catch(err => {
+                    if (err.message !== 'Update failed' && err.message !== 'Status update failed') {
+                        errorEl.textContent = 'Terjadi kesalahan jaringan.';
+                        errorEl.classList.remove('hidden');
+                    }
+                });
 
-                const cells = editingRow.children;
-                cells[1].textContent = fullName;
-                cells[2].textContent =
-                    departmentLabels[department] || department;
-                cells[3].innerHTML = roleBadges[role] || '';
-                cells[5].innerHTML = statusBadges[status];
-
-                closeEditModal();
                 return false;
             }
 
-            // ---------- Perilaku umum modal ----------
-            document
-                .getElementById('addUserModal')
-                .addEventListener('click', function (e) {
-                    if (e.target === e.currentTarget) closeAddModal();
+// ========== Reset Password ==========
+            let resetTargetRow = null;
+
+            function resetPassword(button) {
+                const row = button.closest('tr');
+                resetTargetRow = row;
+
+                document.getElementById('resetConfirmName').textContent = row.dataset.name || '';
+
+                const modal = document.getElementById('resetConfirmModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+
+function closeResetConfirm() {
+                resetTargetRow = null;
+                const modal = document.getElementById('resetConfirmModal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+
+            // ========== Modal: Sukses Reset Password ==========
+            function showResetSuccess(nama) {
+                document.getElementById('resetSuccessName').textContent = nama || '';
+
+                const modal = document.getElementById('resetSuccessModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+
+            function closeResetSuccess() {
+                const modal = document.getElementById('resetSuccessModal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                window.location.reload();
+            }
+
+            function confirmResetPassword() {
+                if (!resetTargetRow) return;
+
+                const userId = resetTargetRow.dataset.userId;
+                const nama = resetTargetRow.dataset.name;
+                const confirmBtn = document.getElementById('resetConfirmButton');
+
+                // Disable tombol selama proses berjalan
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML =
+                    '<span class="material-symbols-outlined text-[18px] animate-spin" style="font-variation-settings: \'FILL\' 1">progress_activity</span>' +
+                    'Memproses...';
+
+                fetch('{{ url("/admin/manajemen-pengguna") }}/' + userId + '/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json().then(data => ({ httpStatus: response.status, data })))
+.then(({ httpStatus, data }) => {
+                    if (httpStatus === 200) {
+                        closeResetConfirm();
+                        showResetSuccess(nama);
+                    } else {
+                        const errors = data.errors || {};
+                        const messages = Object.values(errors).flat().join('\n');
+                    alert(messages || 'Gagal mereset password.');
+                        closeResetConfirm();
+                    }
+                })
+                .catch(() => {
+                    alert('Terjadi kesalahan jaringan.');
+                    closeResetConfirm();
                 });
-            document
-                .getElementById('editUserModal')
-                .addEventListener('click', function (e) {
-                    if (e.target === e.currentTarget) closeEditModal();
+            }
+
+            // ========== Suspend Akun ==========
+            let suspendTargetRow = null;
+
+            function closeSuspendConfirm() {
+                suspendTargetRow = null;
+                const modal = document.getElementById('suspendConfirmModal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+
+            function confirmSuspend() {
+                if (!suspendTargetRow) return;
+
+                const userId = suspendTargetRow.dataset.userId;
+                const nama = suspendTargetRow.dataset.name;
+                const confirmBtn = document.getElementById('suspendConfirmButton');
+
+                // Disable tombol selama proses berjalan
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML =
+                    '<span class="material-symbols-outlined text-[18px] animate-spin" style="font-variation-settings: \'FILL\' 1">progress_activity</span>' +
+                    'Memproses...';
+
+                // User akan disuspend (status inactive)
+                fetch('{{ url("/admin/manajemen-pengguna") }}/' + userId + '/status', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ status: 'inactive' }),
+                })
+                .then(response => response.json().then(data => ({ httpStatus: response.status, data })))
+                .then(({ httpStatus, data }) => {
+                    if (httpStatus === 200) {
+                        closeSuspendConfirm();
+                        alert('Akun "' + nama + '" berhasil disuspend.');
+                        window.location.reload();
+                    } else {
+                        const errors = data.errors || {};
+                        const messages = Object.values(errors).flat().join('\n');
+                        alert(messages || 'Gagal menyuspend akun.');
+                        closeSuspendConfirm();
+                    }
+                })
+                .catch(() => {
+                    alert('Terjadi kesalahan jaringan.');
+                    closeSuspendConfirm();
                 });
+            }
+
+            // ========== Perilaku umum modal ==========
+            document.getElementById('addUserModal').addEventListener('click', function (e) {
+                if (e.target === e.currentTarget) closeAddModal();
+            });
+            document.getElementById('editUserModal').addEventListener('click', function (e) {
+                if (e.target === e.currentTarget) closeEditModal();
+            });
+            document.getElementById('suspendConfirmModal').addEventListener('click', function (e) {
+                if (e.target === e.currentTarget) closeSuspendConfirm();
+            });
+            document.getElementById('resetConfirmModal').addEventListener('click', function (e) {
+                if (e.target === e.currentTarget) closeResetConfirm();
+            });
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
                     closeAddModal();
                     closeEditModal();
+                    closeSuspendConfirm();
+                    closeResetConfirm();
                 }
             });
         </script>

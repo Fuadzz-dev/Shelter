@@ -105,7 +105,8 @@ class ForgotPasswordController extends Controller
 
         $userEmail = Session::get('password_reset_email');
 
-        if ($request->input('email') !== $userEmail) {
+        // Compare case-insensitively: "AbC@mail.com" == "abc@MAIL.com"
+        if (strtolower($request->input('email')) !== strtolower($userEmail)) {
             return back()
                 ->withInput()
                 ->withErrors(['email' => 'Email yang dimasukkan tidak sesuai dengan data akun.']);

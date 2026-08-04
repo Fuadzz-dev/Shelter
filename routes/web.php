@@ -57,6 +57,11 @@ Route::middleware(['auth', 'pegawai'])->prefix('pegawai')->name('pegawai.')->gro
     Route::get('/laporan-helpdesk/{id}', [PegawaiController::class, 'detailLaporan'])->name('laporan-helpdesk.detail');
     Route::get('/laporan-helpdesk/{id}/validasi-digital', [PegawaiController::class, 'validasiDigital'])->name('laporan-helpdesk.validasi-digital');
     Route::post('/laporan-helpdesk/{id}/validasi-selesai', [PegawaiController::class, 'validasiSelesai'])->name('laporan-helpdesk.validasi-selesai');
+    Route::post('/laporan-helpdesk/{id}/belum-selesai', [PegawaiController::class, 'belumSelesai'])->name('laporan-helpdesk.belum-selesai');
+
+    // Profil Pegawai
+    Route::get('/profil', [PegawaiController::class, 'profil'])->name('profil');
+    Route::post('/profil', [PegawaiController::class, 'updateProfil'])->name('profil.update');
 });
 
 /*
@@ -67,8 +72,23 @@ Route::middleware(['auth', 'pegawai'])->prefix('pegawai')->name('pegawai.')->gro
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/helpdesk', [AdminController::class, 'helpdesk'])->name('helpdesk');
+    Route::get('/laporan-helpdesk/create', [AdminController::class, 'createLaporan'])->name('laporan-helpdesk.create');
+    Route::post('/laporan-helpdesk', [AdminController::class, 'storeLaporan'])->name('laporan-helpdesk.store');
+    Route::get('/helpdesk/{id}', [AdminController::class, 'helpdeskDetail'])->name('helpdesk.detail');
+    Route::post('/helpdesk/{id}/log', [AdminController::class, 'storeLog'])->name('helpdesk.log');
     Route::get('/manajemen-pengguna', [AdminController::class, 'manajemenPengguna'])->name('manajemen-pengguna');
     Route::get('/riwayat-helpdesk', [AdminController::class, 'riwayatHelpdesk'])->name('riwayat-helpdesk');
+    Route::get('/riwayat-helpdesk/export', [AdminController::class, 'exportRiwayatHelpdesk'])->name('riwayat-helpdesk.export');
+    Route::get('/riwayat-helpdesk/{id}', [AdminController::class, 'detailRiwayat'])->name('riwayat-helpdesk.detail');
+
+    // User management AJAX endpoints
+    Route::post('/manajemen-pengguna', [AdminController::class, 'storePengguna'])->name('manajemen-pengguna.store');
+    Route::put('/manajemen-pengguna/{id}', [AdminController::class, 'updatePengguna'])->name('manajemen-pengguna.update');
+    Route::patch('/manajemen-pengguna/{id}/status', [AdminController::class, 'toggleStatus'])->name('manajemen-pengguna.toggle-status');
+    Route::post('/manajemen-pengguna/{id}/reset-password', [AdminController::class, 'resetPassword'])->name('manajemen-pengguna.reset-password');
+
+    // Helpdesk log action AJAX endpoint
+    Route::post('/helpdesk/{id}/log', [AdminController::class, 'storeLog'])->name('helpdesk.log');
 });
 
 /*

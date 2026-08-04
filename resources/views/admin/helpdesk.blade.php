@@ -6,22 +6,14 @@
         <title>SHELTER - Admin Panel</title>
         <!-- Google Fonts: Inter -->
         <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
         <link
-            crossorigin=""
-            href="https://fonts.gstatic.com"
-            rel="preconnect"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
             rel="stylesheet"
         />
         <!-- Material Symbols -->
         <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-            rel="stylesheet"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
             rel="stylesheet"
         />
         <!-- Tailwind CSS -->
@@ -156,525 +148,147 @@
             }
         </style>
     </head>
-    <body
-        class="text-on-surface font-body-md text-body-md min-h-screen bg-background flex"
-    >
+    <body class="text-on-surface font-body-md text-body-md min-h-screen bg-background flex">
         <!-- Sidebar Admin -->
         @include('component.sidebar_admin')
 
         <!-- Main Content -->
         <main class="ml-[280px] min-h-screen flex-1 pt-4">
-            <div
-                class="px-container-padding pb-container-padding mx-auto max-w-[1630px] pt-2.7"
-            >
+            <div class="px-container-padding pb-container-padding mx-auto max-w-[1630px] pt-2.7">
+
                 <!-- Page Header -->
-                <div
-                    class="mb-stack-lg flex flex-col justify-between gap-4 sm:flex-row sm:items-end"
-                >
+                <div class="mb-stack-lg flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                     <div>
-                        <h2
-                            class="font-display-lg text-display-lg text-on-surface mb-2"
-                        >
+                        <h2 class="font-display-lg text-display-lg text-on-surface mb-2">
                             Laporan Helpdesk Aktif
                         </h2>
+                        <p class="text-on-surface-variant text-sm">
+                            Total {{ $helpdesks->total() }} laporan aktif
+                        </p>
                     </div>
                 </div>
+
                 <!-- Filters & Actions Bar -->
-                <div
+                <form
+                    method="GET"
+                    action="{{ route('admin.helpdesk') }}"
                     class="bg-surface-container-lowest border-outline-variant p-unit mb-stack-md flex flex-wrap items-center justify-between gap-4 rounded-lg border shadow-sm"
                 >
                     <div class="flex flex-wrap items-center gap-2">
-                        <!-- Search Input (Local to table) -->
+                        <!-- Search Input -->
                         <div class="relative w-full sm:w-64">
                             <span
                                 class="material-symbols-outlined text-on-surface-variant absolute top-1/2 left-3 -translate-y-1/2 text-[20px]"
-                                >search</span
-                            >
+                            >search</span>
                             <input
+                                id="search"
+                                name="search"
+                                value="{{ request('search') }}"
                                 class="bg-surface border-outline-variant font-body-md text-body-md text-on-surface h-[40px] w-full rounded-md border pr-4 pl-10 transition-colors focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none"
-                                placeholder="Cari ID Tiket atau Subjek..."
+                                placeholder="Cari nomor tiket atau subjek..."
                                 type="text"
                             />
                         </div>
                         <!-- Status Filter -->
                         <select
+                            id="status"
+                            name="status"
+                            onchange="this.form.submit()"
                             class="bg-surface border-outline-variant font-body-md text-body-md text-on-surface relative h-[40px] appearance-none rounded-md border px-3 pr-8 transition-colors focus:border-secondary focus:outline-none"
                         >
-                            <option value="" class="">Semua Status</option>
-                            <option value="in_progress" class="">
-                                In Progress
-                            </option>
-                            <option value="in_repair" class="">
-                                In Repair
-                            </option>
-                            <option value="waiting_approval" class="">
-                                Waiting Approval
-                            </option>
+                            <option value="">Semua Status</option>
+                            <option value="In Progress" {{ request('status') === 'In Progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="in repair" {{ request('status') === 'in repair' ? 'selected' : '' }}>In Repair</option>
+                            <option value="Waiting Approval" {{ request('status') === 'Waiting Approval' ? 'selected' : '' }}>Waiting Approval</option>
                         </select>
-                        <!-- Department Filter -->
                     </div>
-                </div>
+                </form>
+
                 <!-- Data Table Container -->
-                <div
-                    class="bg-surface-container-lowest border-outline-variant overflow-hidden rounded-lg border shadow-sm"
-                >
+                <div class="bg-surface-container-lowest border-outline-variant overflow-hidden rounded-lg border shadow-sm">
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse text-left">
                             <thead>
-                                <tr
-                                    class="bg-surface border-outline-variant font-label-md text-label-md text-on-surface-variant border-b tracking-wider uppercase"
-                                >
-                                    <!-- Priority Color Bar Column -->
-
+                                <tr class="bg-surface border-outline-variant font-label-md text-label-md text-on-surface-variant border-b tracking-wider uppercase">
+                                    <th class="px-4 py-3">No. Tiket</th>
                                     <th class="px-4 py-3">Pelapor</th>
-                                    <th class="w-1/3 px-4 py-3">
-                                        Judul Masalah
-                                    </th>
+                                    <th class="w-1/3 px-4 py-3">Judul Masalah</th>
                                     <th class="px-4 py-3">Status</th>
+                                    <th class="px-4 py-3">Tanggal Lapor</th>
                                     <th class="px-4 py-3 text-right">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody
-                                class="font-body-md text-body-md text-on-surface divide-surface-variant divide-y"
-                            >
-                                <!-- Row 1: High Priority, New -->
-                                <tr
-                                    class="hover:bg-surface-container-low group transition-colors"
-                                >
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <p class="font-medium">
-                                                    Ahmad Budi
-                                                </p>
-                                                <p
-                                                    class="text-on-surface-variant text-xs"
-                                                >
-                                                    Divisi Operasional
+                            <tbody class="font-body-md text-body-md text-on-surface divide-surface-variant divide-y">
+                                @forelse ($helpdesks as $helpdesk)
+                                    <tr class="hover:bg-surface-container-low group transition-colors">
+                                        <td class="px-4 py-4">
+                                            <span class="font-mono text-xs text-on-surface-variant">
+                                                {{ $helpdesk->nomor_Helpdesk }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            <div class="flex items-center gap-3">
+                                                <div>
+                                                    <p class="font-medium">
+                                                        {{ $helpdesk->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}
+                                                    </p>
+                                                    <p class="text-on-surface-variant text-xs">
+                                                        {{ $helpdesk->pelapor?->jabatan_departemen ?? '-' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            <p class="text-on-surface max-w-md truncate font-medium">
+                                                {{ $helpdesk->judul_masalah }}
+                                            </p>
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            @php
+                                                $statusClass = match(strtolower($helpdesk->status_Helpdesk)) {
+                                                    'waiting approval' => 'bg-primary-fixed text-on-primary-fixed',
+                                                    'in repair'        => 'bg-secondary-fixed text-on-secondary-fixed',
+                                                    'in progress'      => 'bg-tertiary-fixed text-on-tertiary-fixed',
+                                                    default            => 'bg-surface-container text-on-surface-variant',
+                                                };
+                                            @endphp
+                                            <span class="font-label-sm text-label-sm {{ $statusClass }} inline-flex items-center rounded-full px-2.5 py-0.5">
+                                                {{ $helpdesk->status_Helpdesk }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            <span class="text-on-surface-variant text-xs">
+                                                {{ \Carbon\Carbon::parse($helpdesk->tanggal_lapor)->translatedFormat('d M Y') }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-4 text-right">
+                                            <a
+                                                href="{{ route('admin.helpdesk.detail', $helpdesk->id_helpdesk) }}"
+                                                class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
+                                            >
+                                                Detail
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="px-4 py-12 text-center">
+                                            <div class="flex flex-col items-center gap-2 text-on-surface-variant">
+                                                <span class="material-symbols-outlined text-[48px]">inbox</span>
+                                                <p class="font-medium">Tidak ada laporan aktif</p>
+                                                <p class="text-sm">
+                                                    {{ request('search') || request('status') ? 'Coba ubah filter pencarian Anda.' : 'Belum ada laporan helpdesk yang masuk.' }}
                                                 </p>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <p
-                                            class="text-on-surface max-w-md truncate font-medium"
-                                        >
-                                            Koneksi internet terputus di Gedung
-                                            Utama Lt. 2
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span
-                                            class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed inline-flex items-center rounded-full px-2.5 py-0.5"
-                                            >Waiting Approval</span
-                                        >
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 2: Medium Priority, In Progress -->
-                                <tr
-                                    class="hover:bg-surface-container-low group transition-colors"
-                                >
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <p class="font-medium">
-                                                    Siti Dewi
-                                                </p>
-                                                <p
-                                                    class="text-on-surface-variant text-xs"
-                                                >
-                                                    Keuangan
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <p
-                                            class="text-on-surface max-w-md truncate font-medium"
-                                        >
-                                            Permintaan instalasi software
-                                            akuntansi versi terbaru
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span
-                                            class="font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed inline-flex items-center rounded-full px-2.5 py-0.5"
-                                            >In Repair</span
-                                        >
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 3: Medium Priority, Pending Approval -->
-                                <tr
-                                    class="hover:bg-surface-container-low group transition-colors"
-                                >
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <p class="font-medium">
-                                                    Rudianto Y.
-                                                </p>
-                                                <p
-                                                    class="text-on-surface-variant text-xs"
-                                                >
-                                                    SDM
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <p
-                                            class="text-on-surface max-w-md truncate font-medium"
-                                        >
-                                            Pengadaan monitor tambahan untuk
-                                            staf baru
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span
-                                            class="font-label-sm text-label-sm bg-tertiary-fixed text-on-tertiary-fixed inline-flex items-center rounded-full px-2.5 py-0.5"
-                                            >Waiting Approval</span
-                                        >
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 4: High Priority, In Progress -->
-                                <tr
-                                    class="hover:bg-surface-container-low group transition-colors"
-                                >
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <p class="font-medium">
-                                                    System Alert
-                                                </p>
-                                                <p
-                                                    class="text-on-surface-variant text-xs"
-                                                >
-                                                    Otomatis
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <p
-                                            class="text-on-surface max-w-md truncate font-medium"
-                                        >
-                                            Peringatan Kapasitas Server Utama
-                                            &gt; 90%
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span
-                                            class="font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed inline-flex items-center rounded-full px-2.5 py-0.5"
-                                            >In Repair</span
-                                        >
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr
-                                    class="hover:bg-surface-container-low group transition-colors"
-                                >
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <p class="font-medium">
-                                                    Bambang S.
-                                                </p>
-                                                <p
-                                                    class="text-on-surface-variant text-xs"
-                                                >
-                                                    Keamanan
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <p
-                                            class="text-on-surface max-w-md truncate font-medium"
-                                        >
-                                            Kerusakan CCTV di area parkir timur
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span
-                                            class="font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed inline-flex items-center rounded-full px-2.5 py-0.5"
-                                            >In Repair</span
-                                        >
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr
-                                    class="hover:bg-surface-container-low group transition-colors"
-                                >
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <p class="font-medium">
-                                                    Dewi Lestari
-                                                </p>
-                                                <p
-                                                    class="text-on-surface-variant text-xs"
-                                                >
-                                                    Humas
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <p
-                                            class="text-on-surface max-w-md truncate font-medium"
-                                        >
-                                            Update konten website pengumuman
-                                            layanan
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span
-                                            class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed inline-flex items-center rounded-full px-2.5 py-0.5"
-                                            >Waiting Approval</span
-                                        >
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr
-                                    class="hover:bg-surface-container-low group transition-colors"
-                                >
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <p class="font-medium">
-                                                    Eko Prasetyo
-                                                </p>
-                                                <p
-                                                    class="text-on-surface-variant text-xs"
-                                                >
-                                                    IT Support
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <p
-                                            class="text-on-surface max-w-md truncate font-medium"
-                                        >
-                                            Penggantian toner printer lantai 3
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span
-                                            class="font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed inline-flex items-center rounded-full px-2.5 py-0.5"
-                                            >In Repair</span
-                                        >
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr
-                                    class="hover:bg-surface-container-low group transition-colors"
-                                >
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <p class="font-medium">
-                                                    Farida Utami
-                                                </p>
-                                                <p
-                                                    class="text-on-surface-variant text-xs"
-                                                >
-                                                    Keuangan
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <p
-                                            class="text-on-surface max-w-md truncate font-medium"
-                                        >
-                                            Masalah login aplikasi e-budgeting
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span
-                                            class="font-label-sm text-label-sm bg-tertiary-fixed text-on-tertiary-fixed inline-flex items-center rounded-full px-2.5 py-0.5"
-                                            >Waiting Approval</span
-                                        >
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr
-                                    class="hover:bg-surface-container-low group transition-colors"
-                                >
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <p class="font-medium">
-                                                    Guntur W.
-                                                </p>
-                                                <p
-                                                    class="text-on-surface-variant text-xs"
-                                                >
-                                                    Logistik
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <p
-                                            class="text-on-surface max-w-md truncate font-medium"
-                                        >
-                                            Permintaan akses VPN untuk kerja
-                                            remote
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span
-                                            class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed inline-flex items-center rounded-full px-2.5 py-0.5"
-                                            >Waiting Approval</span
-                                        >
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr
-                                    class="hover:bg-surface-container-low group transition-colors"
-                                >
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <p class="font-medium">
-                                                    Hendra K.
-                                                </p>
-                                                <p
-                                                    class="text-on-surface-variant text-xs"
-                                                >
-                                                    Umum
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <p
-                                            class="text-on-surface max-w-md truncate font-medium"
-                                        >
-                                            Perbaikan AC ruang rapat Cendrawasih
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span
-                                            class="font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed inline-flex items-center rounded-full px-2.5 py-0.5"
-                                            >In Repair</span
-                                        >
-                                    </td>
-                                    <td class="px-4 py-4 text-right">
-                                        <button
-                                            class="font-label-md text-label-md hover:bg-surface-container-low inline-flex h-[36px] items-center justify-center rounded-md border border-secondary px-4 text-secondary transition-colors"
-                                        >
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
-                    <!-- Pagination -->
-                    <div
-                        class="bg-surface border-outline-variant flex items-center justify-between border-t px-4 py-3"
-                    >
-                        <div
-                            class="font-body-md text-body-md text-on-surface-variant"
-                        >
-                            Menampilkan 1 hingga 10 dari 24 laporan
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <button
-                                class="hover:bg-surface-container-low text-on-surface-variant flex h-8 w-8 items-center justify-center rounded disabled:opacity-50"
-                                disabled=""
-                            >
-                                <span
-                                    class="material-symbols-outlined text-[20px]"
-                                    >chevron_left</span
-                                >
-                            </button>
-                            <button
-                                class="bg-primary-container text-on-primary-container font-label-md text-label-md flex h-8 w-8 items-center justify-center rounded"
-                            >
-                                1
-                            </button>
-                            <button
-                                class="hover:bg-surface-container-low text-on-surface font-label-md text-label-md flex h-8 w-8 items-center justify-center rounded"
-                            >
-                                2
-                            </button>
-                            <button
-                                class="hover:bg-surface-container-low text-on-surface font-label-md text-label-md flex h-8 w-8 items-center justify-center rounded"
-                            >
-                                3
-                            </button>
-                            <button
-                                class="hover:bg-surface-container-low text-on-surface-variant flex h-8 w-8 items-center justify-center rounded"
-                            >
-                                <span
-                                    class="material-symbols-outlined text-[20px]"
-                                    >chevron_right</span
-                                >
-                            </button>
-                        </div>
-                    </div>
+
                 </div>
+
             </div>
         </main>
     </body>

@@ -377,13 +377,57 @@
                                 </div>
                                 <div class="bg-surface flex-grow p-6">
                                     @if($laporan->tindakanPerbaikan && $laporan->tindakanPerbaikan->count() > 0)
-                                    <ul
-                                        class="font-body-md text-body-md text-on-surface mb-6 list-disc space-y-3 pl-5"
-                                    >
+                                    <div class="space-y-4">
                                         @foreach($laporan->tindakanPerbaikan as $tindakan)
-                                        <li class="">{{ $tindakan->deskripsi_tindakan ?? $tindakan->keterangan }}</li>
+                                        <div class="border-surface-variant/50 rounded-lg border bg-surface-container-lowest p-4">
+                                            <ul class="font-body-md text-body-md text-on-surface list-disc space-y-3 pl-5">
+                                                <li class="">{{ $tindakan->deskripsi_tindakan ?? $tindakan->keterangan }}</li>
+                                            </ul>
+                                            @if($tindakan->foto_tindakan && count($tindakan->foto_tindakan) > 0)
+                                            <div class="border-surface-variant/50 mt-4 border-t pt-4">
+                                                <h4 class="font-label-md text-on-surface-variant mb-3 text-[11px] tracking-widest uppercase">
+                                                    Foto Lampiran Tindakan
+                                                </h4>
+                                                <div class="flex flex-wrap gap-2">
+                                                    @foreach($tindakan->foto_tindakan as $foto)
+                                                    @php
+                                                        $isVideo = preg_match('/\.(mp4|mov|avi|webm|mkv)$/i', $foto);
+                                                    @endphp
+                                                    @if($isVideo)
+                                                    <div class="group border-outline-variant relative w-64 overflow-hidden rounded border bg-surface-container-lowest shadow-sm">
+                                                        <video
+                                                            src="{{ asset($foto) }}"
+                                                            controls
+                                                            preload="metadata"
+                                                            class="h-auto max-h-64 w-full bg-black object-contain"
+                                                            style="cursor: pointer;"
+                                                        >
+                                                            Browser tidak mendukung pemutaran video.
+                                                        </video>
+                                                    </div>
+                                                    @else
+                                                    <div
+                                                        class="group border-outline-variant relative h-16 w-16 cursor-pointer overflow-hidden rounded border transition-colors hover:border-primary"
+                                                        onclick="window.open(this.firstElementChild.src, '_blank')"
+                                                    >
+                                                        <img
+                                                            alt="Foto Lampiran Tindakan"
+                                                            class="h-full w-full object-cover"
+                                                            src="{{ asset($foto) }}"
+                                                            style="cursor: pointer;"
+                                                        />
+                                                        <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                                                            <span class="material-symbols-outlined text-sm text-white">zoom_in</span>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                            @endif
+                                        </div>
                                         @endforeach
-                                    </ul>
+                                    </div>
                                     @else
                                     <p class="font-body-md text-body-md text-on-surface-variant">Belum ada catatan tindakan perbaikan.</p>
                                     @endif
@@ -392,7 +436,7 @@
                         </div>
                     </div>
                     <!-- Approval Card -->
-                    <form action="{{ route('pegawai.laporan-helpdesk.validasi-selesai', $laporan->id_helpdesk) }}" method="POST">
+                    <form action="{{ route('pegawai.laporan-helpdesk.validasi-selesai', $laporan->id_helpdesk) }}" method="POST" id="form-setujui">
                         @csrf
                     <div
                         class="bg-surface-container-lowest p-container-padding relative flex flex-col overflow-hidden rounded-xl border border-primary/20 shadow-[0_4px_12px_rgba(0,51,102,0.08)]"
@@ -576,6 +620,25 @@
                         </div>
                     </div>
                     </form>
+                    <!-- Belum Selesai Action -->
+                    <form
+                        action="{{ route('pegawai.laporan-helpdesk.belum-selesai', $laporan->id_helpdesk) }}"
+                        method="POST"
+                        id="form-belum-selesai"
+                        class="mt-4"
+                        onsubmit="return confirm('Apakah Anda yakin laporan ini belum selesai? Status akan dikembalikan ke tahap perbaikan.');"
+                    >
+                        @csrf
+                        <button
+                            type="submit"
+                            class="font-label-md text-label-md border-error text-error bg-surface-container-lowest hover:bg-error-container/40 flex h-[44px] w-full items-center justify-center gap-2 rounded-lg border font-semibold transition-all duration-300 active:scale-95"
+                        >
+                            <span class="material-symbols-outlined text-[18px]"
+                                >replay</span
+                            >
+                            Belum Selesai
+                        </button>
+                    </form>
                 </div>
                 <!-- Right Column: Approval Action Panel -->
             </div>
@@ -627,48 +690,50 @@
                     }
                 });
 
-                // Handle Submit Interaction
-                btnApprove.addEventListener('click', () => {
+                // Handle Submit Interaction (real submit via fetch, then redirect to dashboard)
+                const formSetujui = document.getElementById('form-setujui');
+
+                btnApprove.addEventListener('click', (e) => {
                     if (btnApprove.disabled) return;
+
+                    e.preventDefault();
 
                     // 1. Loading State
                     btnApprove.disabled = true;
                     btnText.classList.add('invisible');
                     btnSpinner.classList.remove('hidden');
 
-                    // Simulate network request
-                    setTimeout(() => {
-                        // 2. Success State on Button
+                    // Submit the form via fetch
+                    const formData = new FormData(formSetujui);
+
+                    fetch(formSetujui.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                            'Accept': 'application/json',
+                        },
+                        body: formData,
+                    })
+                    .then(response => {
+                        if (response.redirected) {
+                            // Redirected to dashboard -> success
+                            window.location.href = response.url;
+                        } else if (response.ok) {
+                            window.location.href = '{{ route('pegawai.dashboard') }}';
+                        } else {
+                            // Error: restore button state
+                            btnApprove.disabled = false;
+                            btnSpinner.classList.add('hidden');
+                            btnText.classList.remove('invisible');
+                            alert('Gagal menyimpan persetujuan. Silakan coba lagi.');
+                        }
+                    })
+                    .catch(() => {
+                        btnApprove.disabled = false;
                         btnSpinner.classList.add('hidden');
                         btnText.classList.remove('invisible');
-                        btnText.textContent = 'Disetujui & Selesai';
-                        btnIcon.classList.remove('hidden');
-                        btnApprove.classList.remove(
-                            'bg-primary',
-                            'hover:bg-primary-container',
-                        );
-                        btnApprove.classList.add('bg-[#146c2e]', 'text-white'); // Success Green tone within realistic bounds
-
-                        checkbox.disabled = true;
-
-                        // 3. Reveal QR Code
-                        qrContainer.classList.remove(
-                            'opacity-60',
-                            'border-dashed',
-                            'border-outline-variant',
-                        );
-                        qrContainer.classList.add(
-                            'opacity-100',
-                            'border-solid',
-                            'border-secondary-container',
-                            'bg-surface',
-                            'shadow-sm',
-                        );
-
-                        qrPlaceholder.classList.add('hidden');
-                        qrRevealed.classList.remove('hidden');
-                        qrRevealed.classList.add('flex', 'animate-fade-in');
-                    }, 1500);
+                        alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+                    });
                 });
             });
         </script>

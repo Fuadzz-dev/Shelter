@@ -8,6 +8,7 @@ use App\Models\PersetujuanDigital;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class PegawaiController extends Controller
@@ -33,16 +34,33 @@ class PegawaiController extends Controller
     /**
      * Show the laporan helpdesk page.
      */
-    public function laporanHelpdesk(): View
+    public function laporanHelpdesk(Request $request): View
     {
         $user = auth()->user();
 
-        $laporans = Helpdesk::with('pelapor')
+        $query = Helpdesk::with('pelapor')
             ->where('id_pelapor', $user->user_id)
-            ->orderBy('tanggal_lapor', 'desc')
-            ->get();
+            ->orderBy('tanggal_lapor', 'desc');
 
-        return view('pegawai.laporan_helpdesk', compact('laporans', 'user'));
+        // Filter tab: 'semua' | 'aktif' | 'arsip'
+        $filter = $request->input('filter', 'semua');
+
+        if ($filter === 'aktif') {
+            $query->where('status_Helpdesk', '!=', 'Completed');
+        } elseif ($filter === 'arsip') {
+            $query->where('status_Helpdesk', 'Completed');
+        }
+
+        $laporans = $query->get();
+
+        // Jumlah laporan per kategori untuk tab filter
+        $jumlahSemua = Helpdesk::where('id_pelapor', $user->user_id)->count();
+        $jumlahAktif = Helpdesk::where('id_pelapor', $user->user_id)
+            ->where('status_Helpdesk', '!=', 'Completed')
+            ->count();
+        $jumlahArsip = $jumlahSemua - $jumlahAktif;
+
+        return view('pegawai.laporan_helpdesk', compact('laporans', 'user', 'filter', 'jumlahSemua', 'jumlahAktif', 'jumlahArsip'));
     }
 
     /**
@@ -104,7 +122,12 @@ class PegawaiController extends Controller
     {
         $user = auth()->user();
 
-        $laporan = Helpdesk::with('pelapor')
+        $laporan = Helpdesk::with([
+                'pelapor',
+                'tindakanPerbaikan' => function ($query) {
+                    $query->orderByDesc('waktu_tindakan');
+                },
+            ])
             ->where('id_helpdesk', $id)
             ->where('id_pelapor', $user->user_id)
             ->firstOrFail();
@@ -158,5 +181,108 @@ class PegawaiController extends Controller
 
         return redirect()->route('pegawai.dashboard')
             ->with('success', 'Laporan #' . $laporan->nomor_Helpdesk . ' berhasil divalidasi dan diselesaikan.');
+    }
+
+    /**
+     * Tandai laporan "Waiting Approval" sebagai belum selesai.
+     * Mengembalikan status laporan ke "in repair" dan menandai persetujuan digital sebagai Invalid.
+     */
+    public function belumSelesai($id): RedirectResponse
+    {
+        $user = auth()->user();
+
+        $laporan = Helpdesk::where('id_helpdesk', $id)
+            ->where('id_pelapor', $user->user_id)
+            ->whereIn('status_Helpdesk', ['Waiting Approval', 'Completed'])
+            ->firstOrFail();
+
+        DB::transaction(function () use ($laporan, $user) {
+            // Kembalikan status laporan ke tahap perbaikan
+            $laporan->update([
+                'status_Helpdesk' => 'in repair',
+            ]);
+
+            // Tandai / catat persetujuan digital sebagai Invalid (belum selesai)
+            $persetujuan = PersetujuanDigital::where('id_helpdesk', $laporan->id_helpdesk)
+                ->latest('id_persetujuan')
+                ->first();
+
+            if ($persetujuan) {
+                $persetujuan->update([
+                    'status_dokumen' => 'Invalid',
+                    'id_penyetuju' => $user->user_id,
+                    'waktu_persetujuan' => now(),
+                ]);
+            } else {
+                PersetujuanDigital::create([
+                    'id_helpdesk' => $laporan->id_helpdesk,
+                    'id_penyetuju' => $user->user_id,
+                    'waktu_persetujuan' => now(),
+                    'token_validasi' => 'INV-' . strtoupper(uniqid()),
+                    'status_dokumen' => 'Invalid',
+                ]);
+            }
+        });
+
+        return redirect()->route('pegawai.dashboard')
+            ->with('success', 'Laporan #' . $laporan->nomor_Helpdesk . ' ditandai belum selesai. Status dikembalikan ke tahap perbaikan.');
+    }
+
+    /**
+     * Show the pegawai profile page.
+     */
+    public function profil(): View
+    {
+        $user = auth()->user();
+
+        return view('pegawai.profil_pegawai', compact('user'));
+    }
+
+    /**
+     * Update the pegawai profile (personal info, photo, and password).
+     */
+    public function updateProfil(Request $request): RedirectResponse
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'nama_lengkap' => ['required', 'string', 'max:150'],
+            'jabatan_departemen' => ['nullable', 'string', 'max:150'],
+            'email' => ['nullable', 'email', 'max:100', 'unique:user,email,'.$user->user_id.',user_id'],
+            'foto_profil' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ], [
+            'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
+            'email.unique' => 'Email sudah terdaftar di sistem.',
+            'foto_profil.image' => 'File harus berupa gambar.',
+            'foto_profil.mimes' => 'Foto profil harus berformat jpg, jpeg, png, atau webp.',
+            'foto_profil.max' => 'Ukuran foto profil maksimal 2MB.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        $data = [
+            'nama_lengkap' => $request->input('nama_lengkap'),
+            'jabatan_departemen' => $request->input('jabatan_departemen'),
+            'email' => $request->input('email'),
+        ];
+
+        // Update foto profil jika user mengunggah file baru
+        if ($request->hasFile('foto_profil')) {
+            $file = $request->file('foto_profil');
+            $filename = time().'_'.uniqid().'.'.$file->extension();
+            $file->move(public_path('simpan_foto'), $filename);
+            $data['foto_profil'] = 'simpan_foto/'.$filename;
+        }
+
+        // Update password jika user mengisi password baru
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->input('password'));
+        }
+
+        $user->update($data);
+
+        return redirect()->route('pegawai.profil')
+            ->with('success', 'Profil berhasil diperbarui.');
     }
 }

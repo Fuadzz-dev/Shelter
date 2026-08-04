@@ -40,6 +40,15 @@ class AuthController extends Controller
 
         $credentials = $this->resolveCredentials($request->input('username'), $request->input('password'));
 
+        // Cegah akun non-active (di-suspend) untuk login
+        $user = User::where($this->usernameField($request->input('username')), $request->input('username'))->first();
+
+        if ($user && ($user->status ?? 'active') === 'inactive') {
+            return back()
+                ->withInput($request->only('username'))
+                ->withErrors(['username' => 'Akun Anda telah di-suspend. Silakan hubungi administrator.']);
+        }
+
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
                 ->withInput($request->only('username'))
@@ -145,5 +154,21 @@ class AuthController extends Controller
         }
         // Selain itu (nama lengkap), cari berdasarkan nama_lengkap
         return ['nama_lengkap' => $username, 'password' => $password];
+    }
+
+    /**
+     * Resolve the DB column name based on username input type.
+     */
+    private function usernameField(string $username): string
+    {
+        if (ctype_digit($username)) {
+            return 'nip';
+        }
+
+        if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            return 'email';
+        }
+
+        return 'nama_lengkap';
     }
 }

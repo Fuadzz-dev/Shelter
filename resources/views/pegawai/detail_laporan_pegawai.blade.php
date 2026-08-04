@@ -272,10 +272,103 @@
                         </div>
                     </div>
 
-                    <!-- No Actions -->
+                    <!-- Log Tindakan Teknis -->
+                    <div
+                        class="bg-surface-container-lowest border-outline-variant p-container-padding relative overflow-hidden rounded-xl border shadow-sm"
+                    >
+                        <!-- Decorative background accent -->
+                        <div
+                            class="to-secondary-container absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-secondary"
+                        ></div>
+                        <h3
+                            class="font-headline-sm text-headline-sm mb-stack-md flex items-center gap-2 text-primary"
+                        >
+                            <span class="material-symbols-outlined"
+                                >build</span
+                            >
+                            Log Tindakan Teknis
+                        </h3>
+
+                        @if($laporan->tindakanPerbaikan && $laporan->tindakanPerbaikan->count() > 0)
+                            <div class="space-y-stack-md">
+                                @foreach($laporan->tindakanPerbaikan as $tindakan)
+                                    <div
+                                        class="bg-surface-container-low border-outline-variant/50 rounded-lg border p-stack-md"
+                                    >
+                                        <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                                            <p
+                                                class="font-label-md text-label-md text-secondary flex items-center gap-1.5"
+                                            >
+                                                <span class="material-symbols-outlined text-[16px]">handyman</span>
+                                                Tindakan Teknis
+                                            </p>
+                                            <p
+                                                class="font-label-sm text-label-sm text-on-surface-variant"
+                                            >
+                                                {{ $tindakan->waktu_tindakan ? \Carbon\Carbon::parse($tindakan->waktu_tindakan)->translatedFormat('d M Y, H:i') : '-' }} WIB
+                                            </p>
+                                        </div>
+                                        <p
+                                            class="font-body-md text-body-md text-on-surface leading-relaxed whitespace-pre-line"
+                                        >
+                                            {{ $tindakan->deskripsi_tindakan }}
+                                        </p>
+
+                                        @if($tindakan->foto_tindakan && count($tindakan->foto_tindakan) > 0)
+                                            <div class="mt-stack-md">
+                                                <p
+                                                    class="font-label-sm text-label-sm text-on-surface-variant mb-stack-sm tracking-wider uppercase"
+                                                >
+                                                    Lampiran Tindakan
+                                                </p>
+                                                <div class="flex flex-wrap gap-3">
+                                                    @foreach($tindakan->foto_tindakan as $foto)
+                                                        @php
+                                                            $isVideo = preg_match('/\.(mp4|mov|avi|webm|mkv)$/i', $foto);
+                                                        @endphp
+                                                        @if($isVideo)
+                                                            <div class="group border-outline-variant relative w-80 overflow-hidden rounded-lg border bg-surface-container-lowest shadow-sm">
+                                                                <video
+                                                                    src="{{ asset($foto) }}"
+                                                                    controls
+                                                                    preload="metadata"
+                                                                    class="w-full h-auto max-h-80 object-contain bg-black"
+                                                                    style="cursor: pointer;"
+                                                                >
+                                                                    Browser tidak mendukung pemutaran video.
+                                                                </video>
+                                                            </div>
+                                                        @else
+                                                            <div class="group border-outline-variant relative h-40 w-40 overflow-hidden rounded-lg border bg-surface-container-lowest shadow-sm">
+                                                                <img
+                                                                    src="{{ asset($foto) }}"
+                                                                    alt="Lampiran Tindakan"
+                                                                    class="h-full w-full object-cover"
+                                                                    onclick="window.open(this.src, '_blank')"
+                                                                    style="cursor: pointer;"
+                                                                />
+                                                                <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer"
+                                                                     onclick="window.open(this.src, '_blank')">
+                                                                    <span class="material-symbols-outlined text-white text-lg">zoom_in</span>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="bg-surface-container-low border-outline-variant flex items-center justify-center rounded-lg border border-dashed px-4 py-8 text-on-surface-variant">
+                                <span class="material-symbols-outlined mr-2">build</span>
+                                Belum ada tindakan teknis yang dicatat.
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </main>
     </body>
 </html>
-</create_file>

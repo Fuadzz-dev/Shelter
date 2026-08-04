@@ -1,6 +1,29 @@
 <!-- ========================================================================= -->
 <!-- START: KOMPONEN SIDEBAR ADMIN -->
 <!-- ========================================================================= -->
+@php
+    $sidebarUser = auth()->user();
+    $sidebarPhoto = null;
+
+    if ($sidebarUser && filled($sidebarUser->foto_profil)) {
+        $foto = $sidebarUser->foto_profil;
+
+        // Jika sudah berupa URL lengkap
+        if (is_string($foto) && preg_match('/^https?:\/\//i', $foto)) {
+            $sidebarPhoto = $foto;
+        }
+        // Jika berupa data biner (BLOB) — deteksi via getimagesizefromstring
+        elseif (is_string($foto) && @getimagesizefromstring($foto) !== false) {
+            $mime = getimagesizefromstring($foto)['mime'] ?? 'image/jpeg';
+            $sidebarPhoto = 'data:'.$mime.';base64,'.base64_encode($foto);
+        }
+        // Selain itu anggap sebagai path file
+        elseif (is_string($foto)) {
+            $sidebarPhoto = asset($foto);
+        }
+    }
+@endphp
+
 <nav
     class="text-on-primary border-outline-variant py-stack-md fixed top-0 left-0 z-20 flex h-full w-[280px] flex-col border-r bg-primary shadow-sm"
 >
@@ -9,26 +32,27 @@
         class="px-container-padding mb-stack-lg flex items-center gap-3"
     >
         <div
-            class="bg-primary-fixed flex h-[55px] w-[55px] shrink-0 items-center justify-center rounded-full"
+            class="bg-primary-fixed flex h-[55px] w-[55px] shrink-0 items-center justify-center rounded-full overflow-hidden"
         >
             <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                src="{{ $sidebarPhoto ?: asset('default_profil.jpg') }}"
                 alt="Profile"
                 class="h-full w-full rounded-full object-cover"
             />
         </div>
-        <div>
+        <div class="min-w-0">
             <h1
-                class="font-headline-md text-headline-md font-bold tracking-tight text-white"
+                class="font-headline-md line-clamp-2 font-bold leading-tight tracking-tight text-white"
             >
-                SHELTER
+                {{ $sidebarUser?->nama_lengkap ?: 'SHELTER' }}
             </h1>
         </div>
     </div>
 
     <!-- Primary CTA Button -->
     <div class="px-gutter mb-stack-md">
-        <button
+        <a
+            href="{{ route('admin.laporan-helpdesk.create') }}"
             class="text-on-secondary flex h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-secondary py-2 shadow-sm transition-colors hover:bg-secondary/90"
         >
             <span
@@ -39,7 +63,7 @@
             <span class="font-label-md text-label-md"
                 >Buat Laporan Baru</span
             >
-        </button>
+        </a>
     </div>
 
     <!-- Navigation Tabs -->
