@@ -303,18 +303,18 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <a href="{{ route('pegawai.laporan-helpdesk.detail', $laporan->id_helpdesk) }}"
-                                                class="font-bold text-secondary hover:underline"
-                                            >
-                                                Detail
-                                            </a>
+                                        <div class="flex items-center justify-end gap-12">
                                             @if($laporan->status_Helpdesk === 'Waiting Approval')
                                             <a href="{{ route('pegawai.laporan-helpdesk.validasi-digital', $laporan->id_helpdesk) }}"
                                                 class="bg-secondary text-on-secondary px-3 py-1.5 rounded-md font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-colors shadow-sm active:scale-95 duration-150 whitespace-nowrap">
                                                 Validasi &amp; Selesai
                                             </a>
                                             @endif
+                                            <a href="{{ route('pegawai.laporan-helpdesk.detail', $laporan->id_helpdesk) }}"
+                                                class="font-bold text-secondary hover:underline"
+                                            >
+                                                Detail
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>

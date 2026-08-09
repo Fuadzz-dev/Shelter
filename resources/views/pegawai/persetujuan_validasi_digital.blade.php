@@ -620,17 +620,17 @@
                         </div>
                     </div>
                     </form>
-                    <!-- Belum Selesai Action -->
+<!-- Belum Selesai Action -->
                     <form
                         action="{{ route('pegawai.laporan-helpdesk.belum-selesai', $laporan->id_helpdesk) }}"
                         method="POST"
                         id="form-belum-selesai"
                         class="mt-4"
-                        onsubmit="return confirm('Apakah Anda yakin laporan ini belum selesai? Status akan dikembalikan ke tahap perbaikan.');"
                     >
                         @csrf
                         <button
-                            type="submit"
+                            type="button"
+                            id="btn-belum-selesai"
                             class="font-label-md text-label-md border-error text-error bg-surface-container-lowest hover:bg-error-container/40 flex h-[44px] w-full items-center justify-center gap-2 rounded-lg border font-semibold transition-all duration-300 active:scale-95"
                         >
                             <span class="material-symbols-outlined text-[18px]"
@@ -643,6 +643,80 @@
                 <!-- Right Column: Approval Action Panel -->
             </div>
         </main>
+
+        <!-- Confirmation Modal: Belum Selesai -->
+        <div
+            aria-hidden="true"
+            class="fixed inset-0 z-[100] hidden items-center justify-center p-gutter"
+            id="modal-belum-selesai"
+            role="dialog"
+            aria-labelledby="modal-belum-selesai-title"
+            aria-describedby="modal-belum-selesai-desc"
+        >
+            <!-- Backdrop -->
+            <div
+                class="absolute inset-0 bg-primary/50 backdrop-blur-sm"
+                id="modal-belum-selesai-backdrop"
+            ></div>
+            <!-- Dialog Card -->
+            <div
+                class="bg-surface-container-lowest relative w-full max-w-md overflow-hidden rounded-2xl shadow-2xl"
+                role="document"
+            >
+                <!-- Top accent bar -->
+                <div
+                    class="bg-error absolute top-0 left-0 h-1.5 w-full"
+                ></div>
+                <div class="p-6 pt-8">
+                    <!-- Icon -->
+                    <div
+                        class="bg-error-container/60 flex h-16 w-16 items-center justify-center rounded-full"
+                    >
+                        <span
+                            class="material-symbols-outlined icon-filled text-on-error-container text-3xl"
+                            >error</span
+                        >
+                    </div>
+                    <h2
+                        class="font-headline-md text-headline-sm mt-5 text-primary"
+                        id="modal-belum-selesai-title"
+                    >
+                        Kembalikan ke Perbaikan?
+                    </h2>
+                    <p
+                        class="font-body-md text-body-md text-on-surface-variant mt-2"
+                        id="modal-belum-selesai-desc"
+                    >
+                        Apakah Anda yakin laporan ini belum selesai? Status
+                        akan dikembalikan ke tahap perbaikan.
+                    </p>
+                </div>
+                <!-- Actions -->
+                <div
+                    class="bg-surface-container-low border-surface-variant gap-3 border-t px-6 py-4"
+                >
+                    <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                        <button
+                            type="button"
+                            class="font-label-md text-label-md border-outline-variant text-on-surface-variant hover:bg-surface-variant/60 flex h-[40px] flex-1 items-center justify-center gap-2 rounded-lg border transition-colors sm:flex-none sm:px-5"
+                            id="modal-belum-selesai-batal"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            type="button"
+                            class="font-label-md text-label-md bg-error text-on-error hover:bg-error/90 focus:ring-error/30 flex h-[40px] flex-1 items-center justify-center gap-2 rounded-lg font-semibold shadow-sm transition-all duration-200 focus:ring-2 focus:ring-offset-2 sm:flex-none sm:px-5"
+                            id="modal-belum-selesai-konfirmasi"
+                        >
+                            <span class="material-symbols-outlined text-[18px]"
+                                >restart_alt</span
+                            >
+                            Ya, Kembalikan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const checkbox = document.getElementById('approval-checkbox');
@@ -687,6 +761,45 @@
                             'shadow-sm',
                             'cursor-pointer',
                         );
+                    }
+                });
+
+// ===== Belum Selesai Confirmation Modal =====
+                const modalBelumSelesai = document.getElementById('modal-belum-selesai');
+                const btnBelumSelesai = document.getElementById('btn-belum-selesai');
+                const modalBatal = document.getElementById('modal-belum-selesai-batal');
+                const modalKonfirmasi = document.getElementById('modal-belum-selesai-konfirmasi');
+                const modalBackdrop = document.getElementById('modal-belum-selesai-backdrop');
+                const formBelumSelesai = document.getElementById('form-belum-selesai');
+
+                const openModal = () => {
+                    modalBelumSelesai.classList.remove('hidden');
+                    modalBelumSelesai.classList.add('flex', 'animate-modal-in');
+                    modalBelumSelesai.setAttribute('aria-hidden', 'false');
+                    btnBelumSelesai.focus();
+                };
+
+                const closeModal = () => {
+                    modalBelumSelesai.classList.add('hidden');
+                    modalBelumSelesai.classList.remove('flex', 'animate-modal-in');
+                    modalBelumSelesai.setAttribute('aria-hidden', 'true');
+                };
+
+                btnBelumSelesai.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal();
+                });
+
+                modalBatal.addEventListener('click', closeModal);
+                modalBackdrop.addEventListener('click', closeModal);
+
+                modalKonfirmasi.addEventListener('click', () => {
+                    formBelumSelesai.submit();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && !modalBelumSelesai.classList.contains('hidden')) {
+                        closeModal();
                     }
                 });
 
@@ -737,7 +850,7 @@
                 });
             });
         </script>
-        <style>
+<style>
             @keyframes fadeIn {
                 from {
                     opacity: 0;
@@ -750,6 +863,19 @@
             }
             .animate-fade-in {
                 animation: fadeIn 0.5s ease-out forwards;
+            }
+            @keyframes modalIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(16px) scale(0.96);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            .animate-modal-in {
+                animation: modalIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             }
         </style>
     </body>

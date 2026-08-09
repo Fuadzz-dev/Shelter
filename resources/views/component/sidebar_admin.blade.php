@@ -99,10 +99,10 @@
             <span>User Management</span>
         </a>
 
-        <!-- Tab 3: Profil Saya -->
+<!-- Tab 3: Profil Saya -->
         <a
-            class="font-label-md text-label-md mx-2 my-1 flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 text-on-primary/70 hover:bg-white/10 hover:text-white"
-            href="#"
+            class="font-label-md text-label-md mx-2 my-1 flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 {{ request()->routeIs('admin.profil') ? 'bg-secondary-container text-on-secondary-container shadow-sm' : 'text-on-primary/70 hover:bg-white/10 hover:text-white' }}"
+            href="{{ route('admin.profil') }}"
         >
             <span class="material-symbols-outlined">person</span>
             <span>Profil Saya</span>

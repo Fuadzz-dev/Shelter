@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Pegawai\PegawaiController;
+use App\Http\Controllers\VerifikasiAdminController;
+use App\Http\Controllers\VerifikasiTtdController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,7 +81,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/manajemen-pengguna', [AdminController::class, 'manajemenPengguna'])->name('manajemen-pengguna');
     Route::get('/riwayat-helpdesk', [AdminController::class, 'riwayatHelpdesk'])->name('riwayat-helpdesk');
     Route::get('/riwayat-helpdesk/export', [AdminController::class, 'exportRiwayatHelpdesk'])->name('riwayat-helpdesk.export');
-    Route::get('/riwayat-helpdesk/{id}', [AdminController::class, 'detailRiwayat'])->name('riwayat-helpdesk.detail');
+Route::get('/riwayat-helpdesk/{id}', [AdminController::class, 'detailRiwayat'])->name('riwayat-helpdesk.detail');
+    Route::post('/riwayat-helpdesk/{id}/status-validasi', [AdminController::class, 'updateStatusValidasi'])->name('riwayat-helpdesk.status-validasi');
+
+    // Profil Admin
+    Route::get('/profil', [AdminController::class, 'profil'])->name('profil');
+    Route::post('/profil', [AdminController::class, 'updateProfil'])->name('profil.update');
 
     // User management AJAX endpoints
     Route::post('/manajemen-pengguna', [AdminController::class, 'storePengguna'])->name('manajemen-pengguna.store');
@@ -90,6 +97,27 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Helpdesk log action AJAX endpoint
     Route::post('/helpdesk/{id}/log', [AdminController::class, 'storeLog'])->name('helpdesk.log');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Public Route — Verifikasi Keabsahan Dokumen
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/verifikasi/{nomor}', [VerifikasiTtdController::class, 'show'])
+    ->where('nomor', '.*')
+    ->name('verifikasi');
+
+/*
+|--------------------------------------------------------------------------
+| Public Route — Verifikasi Keabsahan Dokumen (Admin)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/verifikasi-admin/{nomor}', [VerifikasiAdminController::class, 'show'])
+    ->where('nomor', '.*')
+    ->name('verifikasi-admin');
+
 
 /*
 |--------------------------------------------------------------------------

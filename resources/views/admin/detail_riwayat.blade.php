@@ -134,12 +134,22 @@
         <!-- Main Canvas -->
         <main class="px-gutter py-stack-lg mx-auto w-full max-w-5xl flex-grow">
             <!-- Page Header -->
-            <div class="mb-[15px] flex items-center justify-between">
+<div class="mb-[15px] flex items-center justify-between">
                 <div>
                     <div class="flex items-center gap-3 mb-2">
                         <span class="bg-secondary-container/20 text-on-secondary-container font-label-md text-label-sm rounded px-3 py-1 tracking-wider uppercase">
                             {{ $helpdesk->nomor_Helpdesk }}
                         </span>
+                        @if($helpdesk->status_Helpdesk === 'Completed' && $helpdesk->persetujuanDigital->contains('status_dokumen', 'Valid'))
+                        <a
+                            href="{{ url('/verifikasi/'.$helpdesk->nomor_Helpdesk) }}"
+                            target="_blank"
+                            class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-bold tracking-wider text-emerald-700 uppercase transition-colors hover:bg-emerald-500/20"
+                        >
+                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">verified</span>
+                            Verifikasi Keabsahan
+                        </a>
+                        @endif
                         <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold tracking-tighter uppercase
                             @if($helpdesk->status_Helpdesk === 'In Progress') bg-amber-500/10 text-amber-600
                             @elseif($helpdesk->status_Helpdesk === 'in repair') bg-amber-500/10 text-amber-600

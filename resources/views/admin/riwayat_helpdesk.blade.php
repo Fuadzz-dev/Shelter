@@ -16,8 +16,10 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
-    <!-- Tailwind CSS -->
+<!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- qrcodejs for generating a scannable QR code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Theme Configuration -->
     <script id="tailwind-config">
         tailwind.config = {
@@ -229,7 +231,7 @@
                         <button
                             type="submit"
                             class="h-[40px] flex-1 px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
-                            <span class="material-symbols-outlined text-lg">search</span>
+<span class="material-symbols-outlined text-lg">search</span>
                             Terapkan
                         </button>
                     </div>
@@ -251,22 +253,31 @@
                                 <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">
                                     Judul Masalah
                                 </th>
-                                <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant text-right">
+                                <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant whitespace-nowrap">
                                     Status Validasi
                                 </th>
-                                <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant text-right">
+                                <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant whitespace-nowrap">
+                                    Status Validasi admin
+                                </th>
+                                <th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant text-right whitespace-nowrap">
                                     Aksi
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-outline-variant/50">
                             @forelse ($riwayatHelpdesks as $item)
-                                @php
+@php
                                     $persetujuan = $item->persetujuanDigital->first();
                                     $tindakan = $item->tindakanPerbaikan->first();
+                                    $riwayatPertama = $item->riwayat->first();
                                     $waktuSelesai = $persetujuan?->waktu_persetujuan
-                                        ?? $item->riwayat->first()?->waktu_diselesaikan;
+                                        ?? $riwayatPertama?->waktu_diselesaikan;
                                     $statusValidasi = $persetujuan?->status_dokumen;
+                                    $namaAdmin = $riwayatPertama?->pelapor?->nama_lengkap
+                                        ?? $riwayatPertama?->pelapor?->name
+                                        ?? $persetujuan?->penyetuju?->nama_lengkap
+                                        ?? $persetujuan?->penyetuju?->name
+                                        ?? '';
                                 @endphp
                                 <tr class="hover:bg-surface-container-low transition-colors group cursor-default">
                                     <td class="py-3 px-4">
@@ -281,17 +292,55 @@
                                     <td class="py-3 px-4 max-w-xs">
                                         <p class="font-body-md text-body-md text-on-surface font-medium truncate">{{ $item->judul_masalah }}</p>
                                     </td>
-                                    <td class="py-3 px-4 text-right">
+                                    <td class="py-3 px-4" id="verifikasi-pegawai">
                                         @if ($statusValidasi === 'Valid')
-                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-container">
-                                                <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+                                            <button
+                                                type="button"
+                                                onclick="openQrModal('{{ $item->nomor_Helpdesk }}', '{{ $item->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}', '{{ $item->judul_masalah }}', '{{ $item->id_helpdesk }}', 'Valid', '{{ url('/verifikasi') }}')"
+                                                class="bg-secondary-container/20 text-secondary inline-flex h-11 items-center gap-1.5 rounded-full px-3 transition-colors hover:bg-secondary-container/40"
+                                                title="Tampilkan QR Validasi Pegawai"
+                                            >
+                                                <span class="material-symbols-outlined">qr_code_scanner</span>
                                                 <span class="font-label-sm text-label-sm font-bold">Valid</span>
-                                            </div>
+                                            </button>
                                         @elseif ($statusValidasi === 'Invalid')
-                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-error-container text-on-error-container">
-                                                <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+                                            <button
+                                                type="button"
+                                                onclick="openQrModal('{{ $item->nomor_Helpdesk }}', '{{ $item->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}', '{{ $item->judul_masalah }}', '{{ $item->id_helpdesk }}', 'Invalid', '{{ url('/verifikasi') }}')"
+                                                class="bg-error-container text-on-error-container inline-flex h-11 items-center gap-1.5 rounded-full px-3 transition-colors hover:bg-error-container/70"
+                                                title="Tampilkan QR Validasi Pegawai"
+                                            >
+                                                <span class="material-symbols-outlined">qr_code_scanner</span>
                                                 <span class="font-label-sm text-label-sm font-bold">Invalid</span>
+                                            </button>
+                                        @else
+                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container text-on-surface-variant">
+                                                <span class="material-symbols-outlined text-[16px]">help</span>
+                                                <span class="font-label-sm text-label-sm font-bold">Belum Validasi</span>
                                             </div>
+                                        @endif
+                                    </td>
+<td class="py-3 px-4" id="verikasi-admin">
+                                        @if ($statusValidasi === 'Valid')
+                                            <button
+                                                type="button"
+                                                onclick="openQrModal('{{ $item->nomor_Helpdesk }}', '{{ $item->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}', '{{ $item->judul_masalah }}', '{{ $item->id_helpdesk }}', 'Valid', '{{ url('/verifikasi-admin') }}', '{{ $namaAdmin }}')"
+                                                class="bg-secondary-container/20 text-secondary inline-flex h-11 items-center gap-1.5 rounded-full px-3 transition-colors hover:bg-secondary-container/40"
+                                                title="Tampilkan QR Validasi Admin"
+                                            >
+                                                <span class="material-symbols-outlined">qr_code_scanner</span>
+                                                <span class="font-label-sm text-label-sm font-bold">Valid</span>
+                                            </button>
+                                        @elseif ($statusValidasi === 'Invalid')
+                                            <button
+                                                type="button"
+                                                onclick="openQrModal('{{ $item->nomor_Helpdesk }}', '{{ $item->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}', '{{ $item->judul_masalah }}', '{{ $item->id_helpdesk }}', 'Invalid', '{{ url('/verifikasi-admin') }}', '{{ $namaAdmin }}')"
+                                                class="bg-error-container text-on-error-container inline-flex h-11 items-center gap-1.5 rounded-full px-3 transition-colors hover:bg-error-container/70"
+                                                title="Tampilkan QR Validasi Admin"
+                                            >
+                                                <span class="material-symbols-outlined">qr_code_scanner</span>
+                                                <span class="font-label-sm text-label-sm font-bold">Invalid</span>
+                                            </button>
                                         @else
                                             <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container text-on-surface-variant">
                                                 <span class="material-symbols-outlined text-[16px]">help</span>
@@ -300,11 +349,13 @@
                                         @endif
                                     </td>
                                     <td class="py-3 px-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
                                         <a
-                                            href="{{ route('admin.riwayat-helpdesk.detail', $item->id_helpdesk) }}"
-                                            class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors inline-block">
-                                            Detail
-                                        </a>
+                                                href="{{ route('admin.riwayat-helpdesk.detail', $item->id_helpdesk) }}"
+                                                class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors inline-block">
+                                                Detail
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -327,8 +378,210 @@
                     </div>
                 @endif
             </div>
-        </div>
+</div>
     </main>
+
+    <!-- QR Code Modal -->
+    <div
+        aria-hidden="true"
+        class="fixed inset-0 z-[100] hidden items-center justify-center p-gutter"
+        id="qr-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="qr-modal-title"
+    >
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-primary/50 backdrop-blur-sm" id="qr-modal-backdrop"></div>
+        <!-- Dialog Card -->
+        <div class="bg-surface-container-lowest relative w-full max-w-md overflow-hidden rounded-2xl shadow-2xl">
+            <!-- Top accent bar -->
+            <div class="from-secondary-container h-1.5 w-full bg-gradient-to-r to-primary"></div>
+            <div class="p-6">
+                <!-- Header -->
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-secondary-container/20 flex h-11 w-11 items-center justify-center rounded-full text-secondary">
+                            <span class="material-symbols-outlined">qr_code_scanner</span>
+                        </div>
+                        <div>
+                            <h2 id="qr-modal-title" class="font-headline-sm text-headline-sm text-primary">QR Validasi</h2>
+                            <p id="qr-modal-report" class="font-label-md text-label-md text-on-surface-variant mt-0.5"></p>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        onclick="closeQrModal()"
+                        class="text-on-surface-variant hover:text-on-surface flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-surface-container-low"
+                        aria-label="Tutup"
+                    >
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <!-- QR Content -->
+                <div class="mt-6 flex flex-col items-center text-center">
+                    <div id="qr-code-box" class="border-outline-variant rounded-xl border bg-white p-4 shadow-sm"></div>
+                    <p id="qr-modal-title-text" class="font-body-md text-body-md mt-4 font-semibold text-primary"></p>
+                    <p class="font-body-md text-body-md text-on-surface-variant mt-1 text-sm">
+                        Scan QR untuk melihat status validasi
+                        langsung dari database.
+                    </p>
+<button
+                        type="button"
+                        id="qr-status-toggle"
+                        onclick="toggleQrStatus()"
+                        class="border-outline-variant/50 mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border bg-surface-container-low px-3 py-2 transition-colors"
+                        title="Klik untuk mengubah status validasi"
+                    >
+                        <span class="material-symbols-outlined text-secondary text-[16px]" id="qr-status-icon">verified</span>
+                        <span class="font-label-md text-label-md text-secondary" id="qr-status-text">Status: Valid</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+let currentQrCode = null;
+        let currentNomor = null;
+        let currentIdHelpdesk = null;
+        let currentStatus = 'Valid';
+
+        function setStatusUi(status) {
+            const statusText = document.getElementById('qr-status-text');
+            const statusIcon = document.getElementById('qr-status-icon');
+            const statusBtn = document.getElementById('qr-status-toggle');
+
+            if (status === 'Invalid') {
+                statusText.textContent = 'Status: Invalid';
+                statusIcon.textContent = 'cancel';
+                statusBtn.classList.remove('bg-surface-container-low');
+                statusBtn.classList.add('bg-error-container');
+                statusText.classList.remove('text-secondary');
+                statusText.classList.add('text-on-error-container');
+                statusIcon.classList.remove('text-secondary');
+                statusIcon.classList.add('text-on-error-container');
+            } else {
+                statusText.textContent = 'Status: Valid';
+                statusIcon.textContent = 'verified';
+                statusBtn.classList.remove('bg-error-container');
+                statusBtn.classList.add('bg-surface-container-low');
+                statusText.classList.remove('text-on-error-container');
+                statusText.classList.add('text-secondary');
+                statusIcon.classList.remove('text-on-error-container');
+                statusIcon.classList.add('text-secondary');
+            }
+        }
+
+function openQrModal(nomor, nama, judul, idHelpdesk, status, baseUrl, adminNama) {
+            const modal = document.getElementById('qr-modal');
+            const qrBox = document.getElementById('qr-code-box');
+            const reportEl = document.getElementById('qr-modal-report');
+            const titleEl = document.getElementById('qr-modal-title-text');
+
+// Store current context
+            currentNomor = nomor;
+            currentIdHelpdesk = idHelpdesk;
+
+            // Clear previous QR
+            if (currentQrCode) {
+                currentQrCode.clear();
+                currentQrCode = null;
+            }
+            qrBox.innerHTML = '';
+
+// Set metadata
+            reportEl.textContent = nomor;
+            // Tampilkan nama admin (penyetuju) bila disediakan, selain itu judul masalah
+            titleEl.textContent = adminNama ? ('Admin: ' + adminNama) : judul;
+
+            // Set status toggle sesuai status saat ini
+            currentStatus = status === 'Invalid' ? 'Invalid' : 'Valid';
+            setStatusUi(currentStatus);
+
+            // Verification URL (live status from database)
+            // Default ke halaman verifikasi TTD; untuk kolom admin gunakan /verifikasi-admin
+            const base = baseUrl || '{{ url('/verifikasi') }}';
+            const url = base + '/' + encodeURIComponent(nomor);
+
+            if (typeof QRCode !== 'undefined') {
+                currentQrCode = new QRCode(qrBox, {
+                    text: url,
+                    width: 180,
+                    height: 180,
+                    colorDark: '#001e40',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.M,
+                });
+            }
+
+            // Show modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+function toggleQrStatus() {
+            const btn = document.getElementById('qr-status-toggle');
+            const icon = document.getElementById('qr-status-icon');
+            const text = document.getElementById('qr-status-text');
+
+            const newStatus = currentStatus === 'Valid' ? 'Invalid' : 'Valid';
+
+            // Ubah UI dulu
+            currentStatus = newStatus;
+            setStatusUi(newStatus);
+
+// Simpan ke database via AJAX
+            const url = '{{ url('/admin/riwayat-helpdesk') }}/' + currentIdHelpdesk + '/status-validasi';
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: newStatus }),
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    alert(data.message || 'Gagal memperbarui status validasi.');
+                    // revert UI
+                    currentStatus = newStatus === 'Valid' ? 'Invalid' : 'Valid';
+                    setStatusUi(currentStatus);
+                } else {
+                    window.location.reload();
+                }
+            })
+            .catch(() => {
+                alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+                currentStatus = newStatus === 'Valid' ? 'Invalid' : 'Valid';
+                setStatusUi(currentStatus);
+            });
+        }
+
+        function closeQrModal() {
+            const modal = document.getElementById('qr-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('qr-modal');
+            const backdrop = document.getElementById('qr-modal-backdrop');
+
+            backdrop.addEventListener('click', closeQrModal);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeQrModal();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

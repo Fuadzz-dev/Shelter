@@ -131,7 +131,7 @@ class AdminController extends Controller
      * Show the helpdesk history page (status Completed).
      * Data diambil dari tabel helpdesk, tindakan_perbaikan, dan persetujuan_digital.
      */
-    public function riwayatHelpdesk(Request $request): View
+public function riwayatHelpdesk(Request $request): View
     {
         $query = Helpdesk::with([
             'pelapor',
@@ -141,9 +141,11 @@ class AdminController extends Controller
             'persetujuanDigital' => function ($q) {
                 $q->orderByDesc('waktu_persetujuan');
             },
+            'persetujuanDigital.penyetuju',
             'riwayat' => function ($q) {
                 $q->orderByDesc('waktu_diselesaikan');
             },
+            'riwayat.pelapor',
         ])->where('status_Helpdesk', 'Completed');
 
         // Filter rentang tanggal (tanggal lapor / tanggal selesai)
@@ -196,6 +198,38 @@ class AdminController extends Controller
         $riwayatHelpdesks = $query->orderByDesc('tanggal_lapor')->paginate(10)->withQueryString();
 
         return view('admin.riwayat_helpdesk', compact('riwayatHelpdesks'));
+    }
+
+/**
+     * Update status validasi (Valid/Invalid) pada persetujuan digital.
+     * Dipanggil via AJAX dari halaman riwayat helpdesk.
+     */
+    public function updateStatusValidasi(Request $request, int $id): JsonResponse
+    {
+        $request->validate([
+            'status' => ['required', 'string', 'in:Valid,Invalid'],
+        ]);
+
+        $helpdesk = Helpdesk::findOrFail($id);
+
+        $persetujuan = $helpdesk->persetujuanDigital()
+            ->orderByDesc('id_persetujuan')
+            ->first();
+
+        if (! $persetujuan) {
+            return response()->json([
+                'message' => 'Belum ada data persetujuan digital untuk laporan ini.',
+            ], 422);
+        }
+
+        $persetujuan->update([
+            'status_dokumen' => $request->input('status'),
+        ]);
+
+        return response()->json([
+            'message' => 'Status validasi berhasil diperbarui.',
+            'status' => $persetujuan->status_dokumen,
+        ]);
     }
 
     /**
@@ -424,6 +458,66 @@ class AdminController extends Controller
         return response()->json([
             'message' => 'Password berhasil direset ke password default.',
         ]);
+    }
+
+/**
+     * Show the admin profile page.
+     */
+    public function profil(): View
+    {
+        $user = auth()->user();
+
+        return view('admin.profil_admin', compact('user'));
+    }
+
+    /**
+     * Update the admin profile (personal info, photo, and password).
+     */
+    public function updateProfil(Request $request): RedirectResponse
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'nama_lengkap' => ['required', 'string', 'max:150'],
+            'nip' => ['nullable', 'string', 'max:50'],
+            'jabatan_departemen' => ['nullable', 'string', 'max:150'],
+            'email' => ['nullable', 'email', 'max:100', 'unique:user,email,'.$user->user_id.',user_id'],
+            'foto_profil' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ], [
+            'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
+            'email.unique' => 'Email sudah terdaftar di sistem.',
+            'foto_profil.image' => 'File harus berupa gambar.',
+            'foto_profil.mimes' => 'Foto profil harus berformat jpg, jpeg, png, atau webp.',
+            'foto_profil.max' => 'Ukuran foto profil maksimal 2MB.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        $data = [
+            'nama_lengkap' => $request->input('nama_lengkap'),
+            'nip' => $request->input('nip'),
+            'jabatan_departemen' => $request->input('jabatan_departemen'),
+            'email' => $request->input('email'),
+        ];
+
+        // Update foto profil jika user mengunggah file baru
+        if ($request->hasFile('foto_profil')) {
+            $file = $request->file('foto_profil');
+            $filename = time().'_'.uniqid().'.'.$file->extension();
+            $file->move(public_path('simpan_foto'), $filename);
+            $data['foto_profil'] = 'simpan_foto/'.$filename;
+        }
+
+        // Update password jika user mengisi password baru
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->input('password'));
+        }
+
+        $user->update($data);
+
+        return redirect()->route('admin.profil')
+            ->with('success', 'Profil berhasil diperbarui.');
     }
 
     /**
