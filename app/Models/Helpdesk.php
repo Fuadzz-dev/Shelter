@@ -62,9 +62,10 @@ class Helpdesk extends Model
         return $this->hasMany(PersetujuanDigital::class, 'id_helpdesk', 'id_helpdesk');
     }
 
-    /**
-     * Generate nomor helpdesk otomatis.
-     * Menggunakan prefix tahun + sequence global agar tidak duplikat.
+/**
+     * Generate nomor tiket helpdesk otomatis.
+     * Format: TK-{tahun}-{nomor urut 3 digit}
+     * Contoh: TK-2026-001
      */
     public static function generateNomorHelpdesk(): string
     {
@@ -73,11 +74,11 @@ class Helpdesk extends Model
 
         $last = self::query()
             ->where('nomor_Helpdesk', 'like', $prefix.'%')
-            ->orderByRaw('CAST(SUBSTRING(nomor_Helpdesk, -3) AS UNSIGNED) desc')
+            ->orderByRaw('CAST(SUBSTRING_INDEX(nomor_Helpdesk, "-", -1) AS UNSIGNED) desc')
             ->lockForUpdate()
             ->first();
 
-        $sequence = $last ? ((int) substr($last->nomor_Helpdesk, -3)) + 1 : 1;
+        $sequence = $last ? ((int) (explode('-', $last->nomor_Helpdesk)[2] ?? 0)) + 1 : 1;
 
         // Pastikan tidak ada duplikat
         do {
@@ -89,5 +90,23 @@ class Helpdesk extends Model
         } while ($exists);
 
         return $nomor;
+    }
+
+    /**
+     * Generate nomor surat resmi OBU V Makassar.
+     * Format: W.30/{nomor urut}/OBU.V/{tahun}
+     * Nomor urut diambil dari urutan buntut nomor tiket.
+     * Contoh: W.30/5/OBU.V/2026
+     */
+    public function getNomorSuratAttribute(): string
+    {
+        if (preg_match('/^TK-(\d{4})-(\d+)$/', $this->nomor_Helpdesk, $m)) {
+            $year = $m[1];
+            $seq  = (int) $m[2];
+            return 'W.30/'.$seq.'/OBU.V/'.$year;
+        }
+
+        // Fallback: gunakan nomor tiket apa adanya
+        return $this->nomor_Helpdesk;
     }
 }

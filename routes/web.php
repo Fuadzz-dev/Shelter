@@ -81,8 +81,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/manajemen-pengguna', [AdminController::class, 'manajemenPengguna'])->name('manajemen-pengguna');
     Route::get('/riwayat-helpdesk', [AdminController::class, 'riwayatHelpdesk'])->name('riwayat-helpdesk');
     Route::get('/riwayat-helpdesk/export', [AdminController::class, 'exportRiwayatHelpdesk'])->name('riwayat-helpdesk.export');
-Route::get('/riwayat-helpdesk/{id}', [AdminController::class, 'detailRiwayat'])->name('riwayat-helpdesk.detail');
+    Route::get('/riwayat-helpdesk/{id}', [AdminController::class, 'detailRiwayat'])->name('riwayat-helpdesk.detail');
     Route::post('/riwayat-helpdesk/{id}/status-validasi', [AdminController::class, 'updateStatusValidasi'])->name('riwayat-helpdesk.status-validasi');
+    Route::get('/riwayat-helpdesk/{id}/download', [AdminController::class, 'downloadLaporan'])->name('riwayat-helpdesk.download');
 
     // Profil Admin
     Route::get('/profil', [AdminController::class, 'profil'])->name('profil');
@@ -117,7 +118,6 @@ Route::get('/verifikasi/{nomor}', [VerifikasiTtdController::class, 'show'])
 Route::get('/verifikasi-admin/{nomor}', [VerifikasiAdminController::class, 'show'])
     ->where('nomor', '.*')
     ->name('verifikasi-admin');
-
 
 /*
 |--------------------------------------------------------------------------

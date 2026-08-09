@@ -168,20 +168,6 @@
                     Total {{ $riwayatHelpdesks->total() }} laporan selesai
                 </p>
             </div>
-            <div class="flex gap-3">
-                <a
-                    href="{{ route('admin.riwayat-helpdesk.export', request()->query()) }}"
-                    class="h-[44px] px-4 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-label-md text-label-md flex items-center gap-2 hover:bg-surface-container-low transition-colors shadow-sm">
-                    <span class="material-symbols-outlined text-lg">download</span>
-                    Unduh CSV
-                </a>
-                <button
-                    onclick="window.print()"
-                    class="h-[44px] px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
-                    <span class="material-symbols-outlined text-lg">print</span>
-                    Cetak Laporan
-                </button>
-            </div>
         </div>
         <!-- Filter & Table Wrapper -->
         <div class="px-container-padding pb-stack-lg flex flex-col gap-6 flex-1">
@@ -320,7 +306,7 @@
                                             </div>
                                         @endif
                                     </td>
-<td class="py-3 px-4" id="verikasi-admin">
+                                    <td class="py-3 px-4" id="verikasi-admin">
                                         @if ($statusValidasi === 'Valid')
                                             <button
                                                 type="button"
@@ -348,15 +334,23 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td class="py-3 px-4 text-right">
+<td class="py-3 px-4 text-right">
                                         <div class="flex items-center justify-end gap-2">
-                                        <a
+                                            <a
                                                 href="{{ route('admin.riwayat-helpdesk.detail', $item->id_helpdesk) }}"
                                                 class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors inline-block">
                                                 Detail
                                             </a>
+                                            <a
+                                                href="{{ route('admin.riwayat-helpdesk.download', $item->id_helpdesk) }}"
+                                                target="_blank"
+                                                class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors inline-flex items-center gap-1.5">
+                                                <span class="material-symbols-outlined text-[16px]">download</span>
+                                                Unduh Laporan
+                                            </a>
                                         </div>
                                     </td>
+
                                 </tr>
                             @empty
                                 <tr>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Helpdesk;
 use App\Models\TindakanPerbaikan;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -131,7 +132,7 @@ class AdminController extends Controller
      * Show the helpdesk history page (status Completed).
      * Data diambil dari tabel helpdesk, tindakan_perbaikan, dan persetujuan_digital.
      */
-public function riwayatHelpdesk(Request $request): View
+    public function riwayatHelpdesk(Request $request): View
     {
         $query = Helpdesk::with([
             'pelapor',
@@ -200,7 +201,7 @@ public function riwayatHelpdesk(Request $request): View
         return view('admin.riwayat_helpdesk', compact('riwayatHelpdesks'));
     }
 
-/**
+    /**
      * Update status validasi (Valid/Invalid) pada persetujuan digital.
      * Dipanggil via AJAX dari halaman riwayat helpdesk.
      */
@@ -247,6 +248,29 @@ public function riwayatHelpdesk(Request $request): View
         ])->findOrFail($id);
 
         return view('admin.detail_riwayat', compact('helpdesk'));
+    }
+
+    /**
+     * Show the printable/downloadable official report document for a completed helpdesk.
+     */
+    public function downloadLaporan(int $id): View
+    {
+        $helpdesk = Helpdesk::with([
+            'pelapor',
+            'riwayat' => function ($q) {
+                $q->orderByDesc('waktu_diselesaikan');
+            },
+            'riwayat.pelapor',
+            'tindakanPerbaikan' => function ($q) {
+                $q->orderBy('waktu_tindakan');
+            },
+            'persetujuanDigital' => function ($q) {
+                $q->orderByDesc('waktu_persetujuan');
+            },
+            'persetujuanDigital.penyetuju',
+        ])->findOrFail($id);
+
+        return view('admin.download_laporan_helpdesk', compact('helpdesk'));
     }
 
     /**
@@ -320,7 +344,7 @@ public function riwayatHelpdesk(Request $request): View
             $handle = fopen('php://output', 'w');
 
             // BOM agar terbaca UTF-8 di Excel
-            fputs($handle, "\xEF\xBB\xBF");
+            fwrite($handle, "\xEF\xBB\xBF");
 
             fputcsv($handle, [
                 'Nama Pelapor',
@@ -345,7 +369,7 @@ public function riwayatHelpdesk(Request $request): View
                     $item->judul_masalah,
                     $tindakan?->deskripsi_tindakan ?? '-',
                     $waktuSelesai
-                        ? \Carbon\Carbon::parse($waktuSelesai)->translatedFormat('d M Y H:i')
+                        ? Carbon::parse($waktuSelesai)->translatedFormat('d M Y H:i')
                         : '-',
                     $persetujuan?->status_dokumen ?? 'Belum Validasi',
                 ]);
@@ -460,7 +484,7 @@ public function riwayatHelpdesk(Request $request): View
         ]);
     }
 
-/**
+    /**
      * Show the admin profile page.
      */
     public function profil(): View
