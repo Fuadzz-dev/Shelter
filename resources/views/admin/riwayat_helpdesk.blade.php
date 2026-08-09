@@ -341,13 +341,14 @@
                                                 class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors inline-block">
                                                 Detail
                                             </a>
-                                            <a
-                                                href="{{ route('admin.riwayat-helpdesk.download', $item->id_helpdesk) }}"
-                                                target="_blank"
-                                                class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors inline-flex items-center gap-1.5">
-                                                <span class="material-symbols-outlined text-[16px]">download</span>
-                                                Unduh Laporan
-                                            </a>
+                                            @if ($statusValidasi === 'Valid')
+                                                <a
+                                                    href="{{ route('admin.riwayat-helpdesk.download', $item->id_helpdesk) }}"
+                                                    class="px-3 py-1.5 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors inline-flex items-center gap-1.5">
+                                                    <span class="material-symbols-outlined text-[16px]">download</span>
+                                                    Unduh Laporan
+                                                </a>
+                                            @endif
                                         </div>
                                     </td>
 

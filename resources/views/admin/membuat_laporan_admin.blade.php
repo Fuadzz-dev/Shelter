@@ -303,7 +303,6 @@
                         </p>
                     </div>
 
-                    <input type="hidden" name="id_pelapor" id="id_pelapor" value="{{ old('id_pelapor') }}" />
                     @error('id_pelapor')
                         <p class="text-error font-label-md mt-1 px-4 pb-2 text-[11px]">{{ $message }}</p>
                     @enderror
@@ -315,6 +314,9 @@
                 <div class="gap-stack-md flex flex-col lg:col-span-12">
                     <form action="{{ route('admin.laporan-helpdesk.store') }}" method="POST" enctype="multipart/form-data" class="gap-stack-md flex flex-col">
                         @csrf
+
+                        <!-- Atas Nama (Pegawai) — hidden field must be inside the form to be submitted -->
+                        <input type="hidden" name="id_pelapor" id="id_pelapor" value="{{ old('id_pelapor') }}" />
 
                         <!-- Judul Masalah -->
                         <div
@@ -344,6 +346,7 @@
                                     type="text"
                                     id="judul_masalah"
                                     name="judul_masalah"
+                                    value="{{ old('judul_masalah') }}"
                                     required
                                     placeholder="Contoh: Gangguan Koneksi Jaringan di Terminal 2"
                                     class="border-outline-variant bg-surface-container-low text-on-surface font-body-md text-body-md focus:border-primary focus:ring-primary/30 block w-full rounded-lg border px-4 py-3 transition-colors focus:outline-none focus:ring-2"
@@ -368,7 +371,7 @@
                                     rows="5"
                                     placeholder="Jelaskan secara detail masalah yang Anda alami..."
                                     class="border-outline-variant bg-surface-container-low text-on-surface font-body-md text-body-md focus:border-primary focus:ring-primary/30 block w-full rounded-lg border px-4 py-3 transition-colors focus:outline-none focus:ring-2 resize-y"
-                                ></textarea>
+                                >{{ old('deskripsi_keluhan') }}</textarea>
                                 @error('deskripsi_keluhan')
                                     <p class="text-error font-label-md mt-1 text-[11px]">{{ $message }}</p>
                                 @enderror

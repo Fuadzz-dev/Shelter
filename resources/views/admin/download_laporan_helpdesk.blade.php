@@ -70,7 +70,7 @@
         /* ══════════════════════════════════
            KOP SURAT
         ══════════════════════════════════ */
-        .kop-wrapper {
+        .kop-keseluruhan {
             display: flex;
             align-items: center;
             gap: 14px;
@@ -79,11 +79,12 @@
         .kop-logo {
             flex-shrink: 0;
             width: 80px;
-            height: 80px;
+            height: auto;
             object-fit: contain;
         }
 
-        .kop-text { flex: 1; text-align: center; }
+        .kop-content { flex: 1; }
+        .kop-text { text-align: center; }
 
         .kop-kementerian {
             font-size: 13pt;
@@ -111,7 +112,7 @@
         .kop-line-thick {
             border: none;
             border-top: 4px solid #000;
-            margin: 8px 0 2px;
+            margin: 4px 0 2px;
         }
 
         .kop-line-thin {
@@ -120,10 +121,12 @@
             margin: 0;
         }
 
-        .kop-alamat {
+.kop-alamat {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             font-size: 8.5pt;
+            width: 500px;
+            margin-left: auto  ;
         }
 
         .kop-alamat .col-alamat { flex: 1; }
@@ -364,52 +367,56 @@
         <div class="page">
 
 {{-- KOP SURAT --}}
-            <div class="kop-wrapper">
+            <div class="kop-keseluruhan">
                 <img
                     src="{{ asset('images/logo-kemenhub.png') }}"
                     alt="Logo Kementerian Perhubungan"
                     class="kop-logo"
                     onerror="this.style.display='none'"
                 />
-                <div class="kop-text">
-                    <div class="kop-kementerian">KEMENTERIAN PERHUBUNGAN</div>
-                    <div class="kop-direktorat">DIREKTORAT JENDERAL PERHUBUNGAN UDARA</div>
-                    <div class="kop-kantor">KANTOR OTORITAS BANDAR UDARA WILAYAH V MAKASSAR</div>
-                </div>
-            </div>
+                <div class="kop-content">
+                    <div class="kop-wrapper">
+                        <div class="kop-text">
+                            <div class="kop-kementerian">KEMENTERIAN PERHUBUNGAN</div>
+                            <div class="kop-direktorat">DIREKTORAT JENDERAL PERHUBUNGAN UDARA</div>
+                            <div class="kop-kantor">KANTOR OTORITAS BANDAR UDARA WILAYAH V MAKASSAR</div>
+                        </div>
+                    </div>
 
-            <div class="kop-alamat">
-                <div class="col-alamat">
-                    <strong>JL. OTORITAS BANDARA NO. 5</strong><br>
-                    MAROS, SULAWESI SELATAN 90552
-                </div>
-                <div class="col-telp">
-                    <table>
-                        <tr>
-                            <td>TELP</td>
-                            <td>: (0411) 3656222</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>: (0411) 3656222</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="col-fax">
-                    <table>
-                        <tr>
-                            <td>FAX</td>
-                            <td>: (0411) 3656221</td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td>: otban_wil.v@dephub.go.id</td>
-                        </tr>
-                        <tr>
-                            <td>Website</td>
-                            <td>: www.otban5.com</td>
-                        </tr>
-                    </table>
+                    <div class="kop-alamat">
+                        <div class="col-alamat">
+                            <strong>JL. OTORITAS BANDARA NO. 5</strong><br>
+                            MAROS, SULAWESI SELATAN 90552
+                        </div>
+                        <div class="col-telp">
+                            <table>
+                                <tr>
+                                    <td>TELP</td>
+                                    <td>: (0411) 3656222</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>: (0411) 3656222</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-fax">
+                            <table>
+                                <tr>
+                                    <td>FAX</td>
+                                    <td>: (0411) 3656221</td>
+                                </tr>
+                                <tr>
+                                    <td>Email</td>
+                                    <td>: otban_wil.v@dephub.go.id</td>
+                                </tr>
+                                <tr>
+                                    <td>Website</td>
+                                    <td>: www.otban5.com</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             <hr class="kop-line-thick">
@@ -576,58 +583,63 @@
             @endif
 
             {{-- LAMPIRAN FOTO --}}
-            <div class="section-title">III. Lampiran Foto</div>
+            @php
+                $adaFotoKeluhan = is_array($helpdesk->foto_helpdesk) && count($helpdesk->foto_helpdesk) > 0;
+                $adaFotoTindakan = false;
+                if ($tindakanList && $tindakanList->count() > 0) {
+                    foreach ($tindakanList as $tk) {
+                        if (is_array($tk->foto_tindakan) && count($tk->foto_tindakan) > 0) {
+                            $adaFotoTindakan = true;
+                            break;
+                        }
+                    }
+                }
+            @endphp
+            @if($adaFotoKeluhan || $adaFotoTindakan)
+                <div class="section-title">III. Lampiran Foto</div>
 
-            {{-- Foto Keluhan --}}
-            <div class="lampiran-sub">A. Foto Keluhan</div>
-            @if(is_array($helpdesk->foto_helpdesk) && count($helpdesk->foto_helpdesk) > 0)
-                <div class="lampiran-grid">
-                    @foreach($helpdesk->foto_helpdesk as $foto)
-                        @php $isVideo = preg_match('/\.(mp4|mov|avi|webm|mkv)$/i', $foto); @endphp
-                        <div class="lampiran-item">
-                            @if($isVideo)
-                                <video src="{{ asset($foto) }}" controls preload="metadata"></video>
-                            @else
-                                <img src="{{ asset($foto) }}" alt="Foto Keluhan" />
-                            @endif
-                            <div class="lampiran-caption">Foto Keluhan #{{ $loop->iteration }}</div>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="lampiran-empty">Tidak ada foto keluhan yang dilampirkan.</div>
-            @endif
-
-            {{-- Foto Tindakan --}}
-            <div class="lampiran-sub">B. Foto Tindakan</div>
-            @if($tindakanList && $tindakanList->count() > 0)
-                @php $adaFotoTindakan = false; @endphp
-                @foreach($tindakanList as $tindakan)
-                    @if(is_array($tindakan->foto_tindakan) && count($tindakan->foto_tindakan) > 0)
-                        @php $adaFotoTindakan = true; @endphp
-                        <div class="lampiran-sub" style="font-size:9.5pt; margin-top:6px; color:#43474f;">
-                            Tindakan #{{ $loop->iteration }}
-                        </div>
-                        <div class="lampiran-grid">
-                            @foreach($tindakan->foto_tindakan as $foto)
-                                @php $isVideo = preg_match('/\.(mp4|mov|avi|webm|mkv)$/i', $foto); @endphp
-                                <div class="lampiran-item">
-                                    @if($isVideo)
-                                        <video src="{{ asset($foto) }}" controls preload="metadata"></video>
-                                    @else
-                                        <img src="{{ asset($foto) }}" alt="Foto Tindakan" />
-                                    @endif
-                                    <div class="lampiran-caption">Foto Tindakan #{{ $loop->iteration }}</div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                @endforeach
-                @if(!$adaFotoTindakan)
-                    <div class="lampiran-empty">Tidak ada foto tindakan yang dilampirkan.</div>
+                {{-- Foto Keluhan --}}
+                @if($adaFotoKeluhan)
+                    <div class="lampiran-sub">A. Foto Keluhan</div>
+                    <div class="lampiran-grid">
+                        @foreach($helpdesk->foto_helpdesk as $foto)
+                            @php $isVideo = preg_match('/\.(mp4|mov|avi|webm|mkv)$/i', $foto); @endphp
+                            <div class="lampiran-item">
+                                @if($isVideo)
+                                    <video src="{{ asset($foto) }}" controls preload="metadata"></video>
+                                @else
+                                    <img src="{{ asset($foto) }}" alt="Foto Keluhan" />
+                                @endif
+                                <div class="lampiran-caption">Foto Keluhan #{{ $loop->iteration }}</div>
+                            </div>
+                        @endforeach
+                    </div>
                 @endif
-            @else
-                <div class="lampiran-empty">Tidak ada foto tindakan yang dilampirkan.</div>
+
+                {{-- Foto Tindakan --}}
+                @if($adaFotoTindakan)
+                    <div class="lampiran-sub">B. Foto Tindakan</div>
+                    @foreach($tindakanList as $tindakan)
+                        @if(is_array($tindakan->foto_tindakan) && count($tindakan->foto_tindakan) > 0)
+                            <div class="lampiran-sub" style="font-size:9.5pt; margin-top:6px; color:#43474f;">
+                                Tindakan #{{ $loop->iteration }}
+                            </div>
+                            <div class="lampiran-grid">
+                                @foreach($tindakan->foto_tindakan as $foto)
+                                    @php $isVideo = preg_match('/\.(mp4|mov|avi|webm|mkv)$/i', $foto); @endphp
+                                    <div class="lampiran-item">
+                                        @if($isVideo)
+                                            <video src="{{ asset($foto) }}" controls preload="metadata"></video>
+                                        @else
+                                            <img src="{{ asset($foto) }}" alt="Foto Tindakan" />
+                                        @endif
+                                        <div class="lampiran-caption">Foto Tindakan #{{ $loop->iteration }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    @endforeach
+                @endif
             @endif
 
             {{-- PENUTUP --}}
