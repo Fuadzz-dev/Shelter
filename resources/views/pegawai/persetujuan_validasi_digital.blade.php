@@ -648,7 +648,7 @@
         <!-- Confirmation Modal: Belum Selesai -->
         <div
             aria-hidden="true"
-            class="fixed inset-0 z-[100] hidden items-center justify-center p-gutter"
+            class="fixed inset-0 z-[100] hidden items-end sm:items-center justify-center p-0 sm:p-4 md:p-gutter transition-all duration-300"
             id="modal-belum-selesai"
             role="dialog"
             aria-labelledby="modal-belum-selesai-title"
@@ -656,57 +656,67 @@
         >
             <!-- Backdrop -->
             <div
-                class="absolute inset-0 bg-primary/50 backdrop-blur-sm"
+                class="absolute inset-0 bg-primary/50 backdrop-blur-sm transition-opacity duration-300"
                 id="modal-belum-selesai-backdrop"
             ></div>
             <!-- Dialog Card -->
             <div
-                class="bg-surface-container-lowest relative w-full max-w-md overflow-hidden rounded-2xl shadow-2xl"
+                class="bg-surface-container-lowest relative w-full max-w-lg sm:max-w-md overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-2xl transition-all duration-300 max-h-[90vh] flex flex-col z-10"
                 role="document"
             >
                 <!-- Top accent bar -->
                 <div
-                    class="bg-error absolute top-0 left-0 h-1.5 w-full"
+                    class="bg-error absolute top-0 left-0 h-1.5 w-full z-20"
                 ></div>
-                <div class="p-6 pt-8">
-                    <!-- Icon -->
-                    <div
-                        class="bg-error-container/60 flex h-16 w-16 items-center justify-center rounded-full"
-                    >
-                        <span
-                            class="material-symbols-outlined icon-filled text-on-error-container text-3xl"
-                            >error</span
+
+                <!-- Drag indicator handle for mobile bottom sheet view -->
+                <div class="sm:hidden w-full flex justify-center pt-3 pb-1">
+                    <div class="w-12 h-1.5 rounded-full bg-outline-variant/60"></div>
+                </div>
+
+                <div class="p-5 sm:p-6 pt-3 sm:pt-8 overflow-y-auto flex-1">
+                    <div class="flex items-start sm:items-center gap-4 flex-col sm:flex-row">
+                        <!-- Icon -->
+                        <div
+                            class="bg-error-container/60 flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl sm:rounded-full"
                         >
+                            <span
+                                class="material-symbols-outlined icon-filled text-on-error-container text-2xl sm:text-3xl"
+                                >error</span
+                            >
+                        </div>
+                        <div class="flex-1">
+                            <h2
+                                class="font-headline-md text-headline-sm text-primary text-xl sm:text-2xl font-bold"
+                                id="modal-belum-selesai-title"
+                            >
+                                Kembalikan ke Perbaikan?
+                            </h2>
+                            <p
+                                class="font-body-md text-body-md text-on-surface-variant mt-2 text-sm sm:text-base leading-relaxed"
+                                id="modal-belum-selesai-desc"
+                            >
+                                Apakah Anda yakin laporan ini belum selesai? Status
+                                akan dikembalikan ke tahap perbaikan.
+                            </p>
+                        </div>
                     </div>
-                    <h2
-                        class="font-headline-md text-headline-sm mt-5 text-primary"
-                        id="modal-belum-selesai-title"
-                    >
-                        Kembalikan ke Perbaikan?
-                    </h2>
-                    <p
-                        class="font-body-md text-body-md text-on-surface-variant mt-2"
-                        id="modal-belum-selesai-desc"
-                    >
-                        Apakah Anda yakin laporan ini belum selesai? Status
-                        akan dikembalikan ke tahap perbaikan.
-                    </p>
                 </div>
                 <!-- Actions -->
                 <div
-                    class="bg-surface-container-low border-surface-variant gap-3 border-t px-6 py-4"
+                    class="bg-surface-container-low border-surface-variant border-t px-5 sm:px-6 py-4"
                 >
-                    <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                         <button
                             type="button"
-                            class="font-label-md text-label-md border-outline-variant text-on-surface-variant hover:bg-surface-variant/60 flex h-[40px] flex-1 items-center justify-center gap-2 rounded-lg border transition-colors sm:flex-none sm:px-5"
+                            class="font-label-md text-label-md border-outline-variant text-on-surface-variant hover:bg-surface-variant/60 active:scale-[0.98] flex h-12 sm:h-[40px] w-full sm:w-auto items-center justify-center gap-2 rounded-xl sm:rounded-lg border font-medium transition-all sm:px-5"
                             id="modal-belum-selesai-batal"
                         >
                             Batal
                         </button>
                         <button
                             type="button"
-                            class="font-label-md text-label-md bg-error text-on-error hover:bg-error/90 focus:ring-error/30 flex h-[40px] flex-1 items-center justify-center gap-2 rounded-lg font-semibold shadow-sm transition-all duration-200 focus:ring-2 focus:ring-offset-2 sm:flex-none sm:px-5"
+                            class="font-label-md text-label-md bg-error text-on-error hover:bg-error/90 active:scale-[0.98] focus:ring-error/30 flex h-12 sm:h-[40px] w-full sm:w-auto items-center justify-center gap-2 rounded-xl sm:rounded-lg font-semibold shadow-sm transition-all duration-200 focus:ring-2 focus:ring-offset-2 sm:px-5"
                             id="modal-belum-selesai-konfirmasi"
                         >
                             <span class="material-symbols-outlined text-[18px]"
@@ -868,15 +878,27 @@
             @keyframes modalIn {
                 from {
                     opacity: 0;
-                    transform: translateY(16px) scale(0.96);
+                    transform: translateY(100%);
                 }
                 to {
                     opacity: 1;
-                    transform: translateY(0) scale(1);
+                    transform: translateY(0);
+                }
+            }
+            @media (min-width: 640px) {
+                @keyframes modalIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(16px) scale(0.96);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0) scale(1);
+                    }
                 }
             }
             .animate-modal-in {
-                animation: modalIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+                animation: modalIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             }
         </style>
     </body>

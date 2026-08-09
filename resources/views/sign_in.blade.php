@@ -13,10 +13,6 @@
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
             rel="stylesheet"
         />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-            rel="stylesheet"
-        />
         <script id="tailwind-config">
             tailwind.config = {
                 darkMode: 'class',
@@ -71,72 +67,6 @@
                             'on-secondary': '#ffffff',
                             'surface-bright': '#f7f9fb',
                         },
-                        borderRadius: {
-                            DEFAULT: '0.25rem',
-                            lg: '0.5rem',
-                            xl: '0.75rem',
-                            full: '9999px',
-                        },
-                        spacing: {
-                            'container-padding': '24px',
-                            'stack-lg': '32px',
-                            'stack-sm': '8px',
-                            'stack-md': '16px',
-                            gutter: '16px',
-                            unit: '8px',
-                        },
-                        fontFamily: {
-                            'display-lg': ['Inter'],
-                            'body-md': ['Inter'],
-                            'label-sm': ['Inter'],
-                            'label-md': ['Inter'],
-                            'headline-sm': ['Inter'],
-                            'display-lg-mobile': ['Inter'],
-                            'headline-md': ['Inter'],
-                            'body-lg': ['Inter'],
-                        },
-                        fontSize: {
-                            'display-lg': [
-                                '32px',
-                                {
-                                    lineHeight: '40px',
-                                    letterSpacing: '-0.02em',
-                                    fontWeight: '700',
-                                },
-                            ],
-                            'body-md': [
-                                '14px',
-                                { lineHeight: '20px', fontWeight: '400' },
-                            ],
-                            'label-sm': [
-                                '11px',
-                                { lineHeight: '14px', fontWeight: '500' },
-                            ],
-                            'label-md': [
-                                '12px',
-                                {
-                                    lineHeight: '16px',
-                                    letterSpacing: '0.05em',
-                                    fontWeight: '600',
-                                },
-                            ],
-                            'headline-sm': [
-                                '20px',
-                                { lineHeight: '28px', fontWeight: '600' },
-                            ],
-                            'display-lg-mobile': [
-                                '24px',
-                                { lineHeight: '32px', fontWeight: '700' },
-                            ],
-                            'headline-md': [
-                                '24px',
-                                { lineHeight: '32px', fontWeight: '600' },
-                            ],
-                            'body-lg': [
-                                '16px',
-                                { lineHeight: '24px', fontWeight: '400' },
-                            ],
-                        },
                     },
                 },
             };
@@ -156,132 +86,148 @@
                 background-color: #f7f9fb;
             }
             .glass-card {
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.96);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
                 border: 1px solid #e2e8f0;
             }
             .input-focus-ring:focus {
                 outline: none;
                 border-color: #2dbcfe;
-                box-shadow: 0 0 0 2px rgba(45, 188, 254, 0.2);
+                box-shadow: 0 0 0 3px rgba(45, 188, 254, 0.25);
             }
         </style>
     </head>
     <body
-        class="relative flex min-h-screen items-center justify-center overflow-y-auto p-4 py-6"
+        class="relative flex min-h-[100dvh] w-full items-center justify-center overflow-x-hidden bg-[#f7f9fb] p-4 py-6 sm:p-6 sm:py-12"
     >
-        <!-- Background Architectural Element -->
-        <div class="pointer-events-none absolute inset-0 z-0 opacity-10">
+        <!-- Background Ambient Blur Elements -->
+        <div class="pointer-events-none fixed inset-0 z-0 overflow-hidden">
             <div
-                class="bg-primary-container absolute top-[-10%] right-[-10%] h-1/2 w-1/2 rounded-full blur-[120px]"
+                class="bg-primary-container absolute -top-[10%] -right-[10%] h-[45vh] w-[45vh] max-w-[500px] max-h-[500px] rounded-full opacity-10 blur-[100px] sm:blur-[120px]"
             ></div>
             <div
-                class="bg-secondary-container absolute bottom-[-10%] left-[-10%] h-1/2 w-1/2 rounded-full blur-[120px]"
+                class="bg-secondary-container absolute -bottom-[10%] -left-[10%] h-[45vh] w-[45vh] max-w-[500px] max-h-[500px] rounded-full opacity-10 blur-[100px] sm:blur-[120px]"
             ></div>
         </div>
+
         <!-- Login Container -->
-        <main class="z-10 w-full max-w-[440px]">
+        <main class="relative z-10 w-full max-w-[440px] mx-auto">
             <div
-                class="glass-card animate-in rounded-xl shadow-xl duration-700 fade-in slide-in-from-bottom-4 p-6 sm:p-stack-lg"
+                class="glass-card rounded-2xl shadow-xl shadow-slate-200/60 p-5 sm:p-8 transition-all duration-500"
             >
                 <!-- Branding Header -->
-                <div class="mb-stack-lg flex flex-col items-center">
+                <div class="mb-6 sm:mb-8 flex flex-col items-center text-center">
                     <div
-                        class="mb-stack-md flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-primary shadow-lg sm:h-20 sm:w-20"
+                        class="mb-3 sm:mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border-4 border-white bg-gradient-to-br from-[#003366] to-[#001e40] shadow-md shadow-blue-950/20 sm:h-20 sm:w-20"
                     >
                         <span
-                            class="material-symbols-outlined !text-4xl text-white"
+                            class="material-symbols-outlined !text-3xl sm:!text-4xl text-white"
                             data-icon="shield"
                             >shield</span
                         >
                     </div>
                     <h1
-                        class="font-display-lg text-display-lg-mobile sm:text-display-lg text-center text-primary"
+                        class="text-2xl sm:text-3xl font-extrabold tracking-tight text-primary"
                     >
                         SHELTER
                     </h1>
                     <p
-                        class="font-body-md text-body-md text-on-surface-variant mt-1"
+                        class="mt-1 text-xs sm:text-sm font-medium text-on-surface-variant"
                     >
                         Otban Wilayah V IT Helpdesk
                     </p>
                 </div>
-                <!-- Login Form -->
+
+                <!-- Session & Error Notifications -->
                 @if ($errors->any())
-                    <div class="mb-stack-md rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                        {{ $errors->first() }}
+                    <div class="mb-5 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50/90 p-3.5 text-xs sm:text-sm text-red-700 shadow-sm">
+                        <span class="material-symbols-outlined shrink-0 !text-xl text-red-600">error</span>
+                        <div class="flex-1 font-medium leading-relaxed">
+                            {{ $errors->first() }}
+                        </div>
                     </div>
                 @endif
+
                 @if (session('status'))
-                    <div class="mb-stack-md rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-                        {{ session('status') }}
+                    <div class="mb-5 flex items-start gap-2.5 rounded-xl border border-green-200 bg-green-50/90 p-3.5 text-xs sm:text-sm text-green-700 shadow-sm">
+                        <span class="material-symbols-outlined shrink-0 !text-xl text-green-600">check_circle</span>
+                        <div class="flex-1 font-medium leading-relaxed">
+                            {{ session('status') }}
+                        </div>
                     </div>
                 @endif
+
+                <!-- Login Form -->
                 <form
                     action="{{ route('sign-in.submit') }}"
-                    class="space-y-stack-md"
+                    class="space-y-4 sm:space-y-5"
                     method="POST"
                 >
                     @csrf
                     <!-- Username/NIP -->
-                    <div class="space-y-unit">
+                    <div class="space-y-1.5">
                         <label
-                            class="font-label-md text-label-md text-on-surface-variant block tracking-wider uppercase"
+                            class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant"
                             for="username"
                             >NIP / Nama Lengkap</label
                         >
                         <div class="group relative">
                             <span
-                                class="material-symbols-outlined text-outline group-focus-within:text-secondary-container absolute top-1/2 left-3 -translate-y-1/2 transition-colors"
+                                class="material-symbols-outlined text-outline group-focus-within:text-secondary-container absolute top-1/2 left-3.5 -translate-y-1/2 !text-xl transition-colors pointer-events-none"
                                 data-icon="person"
                                 >person</span
                             >
                             <input
-                                class="border-outline-variant font-body-md text-body-md text-on-surface input-focus-ring placeholder:text-outline h-[44px] w-full rounded-lg border bg-white pr-4 pl-10 transition-all @error('username') border-red-400 @enderror"
+                                class="border-outline-variant text-on-surface input-focus-ring placeholder:text-slate-400 h-11 sm:h-12 w-full rounded-xl border bg-white pr-4 pl-11 text-sm sm:text-base transition-all @error('username') border-red-400 @enderror"
                                 id="username"
                                 name="username"
                                 value="{{ old('username') }}"
                                 placeholder="Masukkan NIP atau Nama Lengkap"
-                                required=""
+                                required
                                 type="text"
+                                autocomplete="username"
                             />
                         </div>
                     </div>
+
                     <!-- Password -->
-                    <div class="space-y-unit">
-                        <div class="flex items-center justify-between">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between gap-2">
                             <label
-                                class="font-label-md text-label-md text-on-surface-variant block tracking-wider uppercase"
+                                class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant"
                                 for="password"
                                 >Password</label
                             >
                             <a
-                                class="font-label-md text-label-md text-secondary hover:underline"
+                                class="text-xs font-semibold text-secondary hover:underline transition-colors shrink-0"
                                 href="{{ route('lupa-password') }}"
                                 >Lupa Password?</a
                             >
                         </div>
                         <div class="group relative">
                             <span
-                                class="material-symbols-outlined text-outline group-focus-within:text-secondary-container absolute top-1/2 left-3 -translate-y-1/2 transition-colors"
+                                class="material-symbols-outlined text-outline group-focus-within:text-secondary-container absolute top-1/2 left-3.5 -translate-y-1/2 !text-xl transition-colors pointer-events-none"
                                 data-icon="lock"
                                 >lock</span
                             >
                             <input
-                                class="border-outline-variant font-body-md text-body-md text-on-surface input-focus-ring placeholder:text-outline h-[44px] w-full rounded-lg border bg-white pr-12 pl-10 transition-all"
+                                class="border-outline-variant text-on-surface input-focus-ring placeholder:text-slate-400 h-11 sm:h-12 w-full rounded-xl border bg-white pr-11 pl-11 text-sm sm:text-base transition-all"
                                 id="password"
                                 name="password"
                                 placeholder="••••••••"
-                                required=""
+                                required
                                 type="password"
+                                autocomplete="current-password"
                             />
                             <button
-                                class="text-outline hover:text-on-surface absolute top-1/2 right-3 -translate-y-1/2 transition-colors"
+                                class="text-outline hover:text-on-surface absolute top-1/2 right-2.5 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 transition-colors focus:outline-none"
                                 onclick="togglePassword()"
                                 type="button"
+                                aria-label="Tampilkan atau sembunyikan password"
                             >
                                 <span
-                                    class="material-symbols-outlined"
+                                    class="material-symbols-outlined block !text-xl"
                                     data-icon="visibility"
                                     id="pass-icon"
                                     >visibility</span
@@ -289,39 +235,42 @@
                             </button>
                         </div>
                     </div>
+
                     <!-- Remember Me -->
-                    <div class="flex items-center space-x-2 py-1">
+                    <div class="flex items-center space-x-2.5 py-1">
                         <input
-                            class="border-outline-variant focus:ring-secondary-container h-4 w-4 cursor-pointer rounded text-primary"
+                            class="border-outline-variant focus:ring-secondary-container h-4 w-4 cursor-pointer rounded text-primary accent-[#003366]"
                             id="remember"
                             name="remember"
                             type="checkbox"
                         />
                         <label
-                            class="font-body-md text-body-md text-on-surface-variant cursor-pointer select-none"
+                            class="cursor-pointer text-xs sm:text-sm font-medium text-on-surface-variant select-none"
                             for="remember"
-                            >Remember Me</label
+                            >Ingat Saya</label
                         >
                     </div>
+
                     <!-- Action Button -->
                     <button
-                        class="bg-primary-container text-on-primary font-label-md text-label-md mt-stack-md flex h-[44px] w-full items-center justify-center gap-2 rounded-lg shadow-md transition-all hover:bg-primary hover:shadow-lg active:scale-[0.98]"
+                        class="mt-2 flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary-container font-semibold text-white shadow-md shadow-blue-950/20 text-sm sm:text-base transition-all hover:bg-primary hover:shadow-lg active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-secondary-container focus:ring-offset-2"
                         type="submit"
                     >
-                        Masuk
+                        <span>Masuk</span>
                         <span
-                            class="material-symbols-outlined"
+                            class="material-symbols-outlined !text-xl"
                             data-icon="login"
                             >login</span
                         >
                     </button>
                 </form>
+
                 <!-- Footer Link -->
                 <div
-                    class="mt-stack-lg pt-stack-md border-outline-variant border-t text-center"
+                    class="mt-6 sm:mt-8 border-t border-slate-200/80 pt-4 sm:pt-6 text-center"
                 >
                     <p
-                        class="font-body-md text-body-md text-on-surface-variant"
+                        class="text-xs sm:text-sm text-on-surface-variant"
                     >
                         Belum memiliki akses?
                         <a
@@ -332,12 +281,8 @@
                     </p>
                 </div>
             </div>
-            <!-- System Status Footer -->
         </main>
-        <!-- Side Illustration (Desktop Only Decor) -->
-        <div class="fixed bottom-12 left-12 hidden max-w-[300px] lg:block">
-            <div class="space-y-4"></div>
-        </div>
+
         <script>
             function togglePassword() {
                 const input = document.getElementById('password');
@@ -350,12 +295,7 @@
                     icon.textContent = 'visibility';
                 }
             }
-
-            // Simple enter animation trigger
-            document.addEventListener('DOMContentLoaded', () => {
-                const card = document.querySelector('.glass-card');
-                card.classList.add('opacity-100');
-            });
         </script>
     </body>
 </html>
+

@@ -190,17 +190,19 @@
                             />
                         </div>
                         <!-- Status Filter -->
-                        <select
-                            id="status"
-                            name="status"
-                            onchange="this.form.submit()"
-                            class="bg-surface border-outline-variant font-body-md text-body-md text-on-surface relative h-[40px] w-full appearance-none rounded-md border px-3 pr-8 transition-colors focus:border-secondary focus:outline-none sm:w-auto"
-                        >
-                            <option value="">Semua Status</option>
-                            <option value="In Progress" {{ request('status') === 'In Progress' ? 'selected' : '' }}>In Progress</option>
-                            <option value="in repair" {{ request('status') === 'in repair' ? 'selected' : '' }}>In Repair</option>
-                            <option value="Waiting Approval" {{ request('status') === 'Waiting Approval' ? 'selected' : '' }}>Waiting Approval</option>
-                        </select>
+                        <div class="relative w-full sm:w-auto">
+                            <select
+                                id="status"
+                                name="status"
+                                onchange="this.form.submit()"
+                                class="bg-surface border-outline-variant font-body-md text-body-md text-on-surface h-[40px] w-full cursor-pointer appearance-none rounded-md border pl-3 pr-10 transition-colors focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none sm:w-auto sm:min-w-[170px]"
+                            >
+                                <option value="">Semua Status</option>
+                                <option value="In Progress" {{ request('status') === 'In Progress' ? 'selected' : '' }}>In Progress</option>
+                                <option value="in repair" {{ request('status') === 'in repair' ? 'selected' : '' }}>In Repair</option>
+                                <option value="Waiting Approval" {{ request('status') === 'Waiting Approval' ? 'selected' : '' }}>Waiting Approval</option>
+                            </select>
+                        </div>
                     </div>
                 </form>
 

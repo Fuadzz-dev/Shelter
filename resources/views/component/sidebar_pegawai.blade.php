@@ -46,20 +46,19 @@
 
     <!-- Brand -->
     <div class="flex items-center gap-2">
-        <div class="bg-primary-fixed flex h-8 w-8 items-center justify-center rounded-full overflow-hidden">
-            <img
-                src="{{ $sidebarPhoto ?: asset('default_profil.jpg') }}"
-                alt="Profile"
-                class="h-full w-full rounded-full object-cover"
-            />
-        </div>
         <span class="font-headline-sm text-headline-sm line-clamp-1 font-bold text-white">
             {{ $sidebarUser?->nama_lengkap ?: 'SHELTER' }}
         </span>
     </div>
 
-    <!-- Placeholder agar brand tetap di tengah -->
-    <div class="w-10"></div>
+    <!-- Foto Profil (Sebelah Kanan) -->
+    <a href="{{ route('pegawai.profil') }}" class="bg-primary-fixed flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden border border-white/20 shadow-sm">
+        <img
+            src="{{ $sidebarPhoto ?: asset('default_profil.jpg') }}"
+            alt="Profile"
+            class="h-full w-full rounded-full object-cover"
+        />
+    </a>
 </header>
 
 <!-- ============================================================ -->
@@ -145,27 +144,28 @@
     <!-- Drawer Header -->
     <div class="border-outline-variant/30 flex items-center justify-between border-b px-4 py-4">
         <div class="flex items-center gap-3">
-            <div class="bg-primary-fixed flex h-10 w-10 items-center justify-center rounded-full overflow-hidden">
+            <div class="bg-primary-fixed flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden border border-white/20">
                 <img
                     src="{{ $sidebarPhoto ?: asset('default_profil.jpg') }}"
                     alt="Profile"
                     class="h-full w-full rounded-full object-cover"
                 />
             </div>
-            <div class="min-w-0">
-                <h1 class="font-headline-sm line-clamp-1 font-bold text-white">
-                    {{ $sidebarUser?->nama_lengkap ?: 'SHELTER' }}
-                </h1>
-            </div>
+            <h1 class="font-headline-sm line-clamp-1 font-bold text-white">
+                {{ $sidebarUser?->nama_lengkap ?: 'SHELTER' }}
+            </h1>
         </div>
-        <button
-            type="button"
-            id="mobile-menu-close"
-            class="flex h-10 w-10 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/10"
-            aria-label="Tutup menu"
-        >
-            <span class="material-symbols-outlined">close</span>
-        </button>
+        <div class="flex items-center gap-2">
+            
+            <button
+                type="button"
+                id="mobile-menu-close"
+                class="flex h-10 w-10 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/10"
+                aria-label="Tutup menu"
+            >
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
     </div>
 
     <!-- Primary CTA Button -->

@@ -11,6 +11,27 @@
         }
         return false;
     };
+
+    $navUser = auth()->user();
+    $navPhoto = null;
+
+    if ($navUser && filled($navUser->foto_profil)) {
+        $foto = $navUser->foto_profil;
+
+        // Jika sudah berupa URL lengkap
+        if (is_string($foto) && preg_match('/^https?:\/\//i', $foto)) {
+            $navPhoto = $foto;
+        }
+        // Jika berupa data biner (BLOB)
+        elseif (is_string($foto) && @getimagesizefromstring($foto) !== false) {
+            $mime = getimagesizefromstring($foto)['mime'] ?? 'image/jpeg';
+            $navPhoto = 'data:'.$mime.';base64,'.base64_encode($foto);
+        }
+        // Selain itu anggap sebagai path file
+        elseif (is_string($foto)) {
+            $navPhoto = asset($foto);
+        }
+    }
 @endphp
 
 <!-- Tab 0: Laporan Helpdesk -->
@@ -46,12 +67,15 @@
 
 <!-- Tab 3: Profil Saya -->
 <a
-    class="font-label-md text-label-md mx-2 my-1 flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 {{ $adminMenuActive(['admin.profil']) ? 'bg-secondary-container text-on-secondary-container shadow-sm' : 'text-on-primary/70 hover:bg-white/10 hover:text-white' }}"
+    class="font-label-md text-label-md mx-2 my-1 flex items-center justify-between gap-3 rounded-lg px-3 py-2 transition-colors duration-200 {{ $adminMenuActive(['admin.profil']) ? 'bg-secondary-container text-on-secondary-container shadow-sm' : 'text-on-primary/70 hover:bg-white/10 hover:text-white' }}"
     href="{{ route('admin.profil') }}"
 >
-    <span class="material-symbols-outlined">person</span>
-    <span>Profil Saya</span>
+    <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined">person</span>
+        <span>Profil Saya</span>
+    </div>
 </a>
 <!-- ========================================================================= -->
 <!-- END: NAV LINKS ADMIN -->
 <!-- ========================================================================= -->
+

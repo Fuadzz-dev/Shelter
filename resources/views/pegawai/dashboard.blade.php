@@ -154,25 +154,25 @@
                 Dashboard
             </h1>
 
-            <!-- Notifikasi Laporan Membutuhkan Validasi -->
+             <!-- Notifikasi Laporan Membutuhkan Validasi -->
             @if($pendingApprovalLaporan)
-            <div class="bg-secondary-fixed/20 border border-secondary/30 rounded-xl p-4 flex items-center justify-between shadow-sm">
+            <div class="bg-secondary-fixed/20 border border-secondary/30 rounded-xl p-4 md:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
+                    <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary flex-shrink-0">
                         <span class="material-symbols-outlined">hourglass_empty</span>
                     </div>
                     <div>
-                        <h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">
+                        <h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
                             Laporan Membutuhkan Validasi
                         </h3>
                         <p class="font-body-md text-body-md text-on-surface-variant">
-                            {{ $pendingApprovalLaporan->nomor_Helpdesk }} telah diselesaikan oleh teknisi. Silakan validasi.
+                            <span class="font-bold text-primary">{{ $pendingApprovalLaporan->nomor_Helpdesk }}</span> telah diselesaikan oleh teknisi. Silakan lakukan validasi digital.
                         </p>
                     </div>
                 </div>
                 <a href="{{ route('pegawai.laporan-helpdesk.validasi-digital', $pendingApprovalLaporan->id_helpdesk) }}"
-                    class="bg-secondary text-on-secondary px-6 py-2 rounded-lg font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-colors shadow-sm active:scale-95 duration-150 whitespace-nowrap">
-                    Validasi &amp; Selesai
+                    class="inline-flex items-center justify-center gap-2 bg-secondary text-on-secondary px-5 py-2.5 rounded-lg font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-all shadow-sm active:scale-95 duration-150 whitespace-nowrap w-full sm:w-auto">
+                    <span>Validasi &amp; Selesai</span>
                 </a>
             </div>
             @endif
@@ -189,7 +189,7 @@
                                     Laporan Saya
                                 </h2>
                             </div>
-                            <a href="{{ route('pegawai.laporan-helpdesk') }}" class="text-secondary font-label-md text-label-md hover:underline">
+                            <a href="{{ route('pegawai.laporan-helpdesk') }}" class="text-secondary font-label-md text-label-md hover:underline font-semibold">
                                 Lihat Semua
                             </a>
                         </div>
@@ -213,27 +213,29 @@
                                 @endphp
                                 <div class="border border-outline-variant rounded-lg p-4 flex flex-col gap-3 hover:bg-surface-container-low transition-colors group relative overflow-hidden">
                                     <div class="absolute left-0 top-0 bottom-0 w-[3px] {{ $barColor }}"></div>
-                                    <div class="flex justify-between items-start pl-2">
-                                        <div>
-                                            <div class="flex items-center gap-2 mb-1">
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pl-2">
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2 mb-1 flex-wrap">
                                                 <span class="font-label-sm text-label-sm text-outline">{{ $laporan->nomor_Helpdesk }}</span>
                                                 <span class="px-2 py-0.5 rounded {{ $statusBg }} font-label-sm text-[10px] uppercase font-bold">{{ $laporan->status_Helpdesk }}</span>
                                             </div>
-                                            <h4 class="font-headline-sm text-[16px] text-on-surface font-semibold">
+                                            <a href="{{ route('pegawai.laporan-helpdesk.detail', $laporan->id_helpdesk) }}" class="font-headline-sm text-[16px] text-on-surface font-semibold hover:text-primary transition-colors block line-clamp-1">
                                                 {{ $laporan->judul_masalah }}
-                                            </h4>
-                                            <p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">
+                                            </a>
+                                            <p class="font-body-md text-body-md text-on-surface-variant line-clamp-1 mt-0.5">
                                                 {{ $laporan->deskripsi_keluhan }}
                                             </p>
                                         </div>
-                                        <div class="flex flex-col items-end gap-2 flex-shrink-0">
+                                        <div class="flex flex-wrap sm:flex-col items-start sm:items-end justify-between w-full sm:w-auto gap-2 flex-shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-outline-variant/40">
                                             <span class="font-label-sm text-label-sm text-outline">{{ $laporan->tanggal_lapor ? $laporan->tanggal_lapor->format('d M Y') : '-' }}</span>
-                                            @if($laporan->status_Helpdesk === 'Waiting Approval')
-                                            <a href="{{ route('pegawai.laporan-helpdesk.validasi-digital', $laporan->id_helpdesk) }}"
-                                                class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-colors shadow-sm active:scale-95 duration-150 whitespace-nowrap">
-                                                Validasi &amp; Selesai
-                                            </a>
-                                            @endif
+                                            <div class="flex items-center gap-2">
+                                                @if($laporan->status_Helpdesk === 'Waiting Approval')
+                                                <a href="{{ route('pegawai.laporan-helpdesk.validasi-digital', $laporan->id_helpdesk) }}"
+                                                    class="inline-flex items-center gap-1.5 bg-secondary text-on-secondary px-3.5 py-1.5 rounded-lg font-label-md text-label-md font-semibold hover:bg-secondary/90 transition-colors shadow-sm active:scale-95 duration-150 whitespace-nowrap">
+                                                    <span>Validasi &amp; Selesai</span>
+                                                </a>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -251,4 +253,3 @@
 </body>
 
 </html>
-</create_file>
