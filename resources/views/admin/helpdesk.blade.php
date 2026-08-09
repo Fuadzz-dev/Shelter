@@ -152,14 +152,14 @@
         <!-- Sidebar Admin -->
         @include('component.sidebar_admin')
 
-        <!-- Main Content -->
-        <main class="ml-[280px] min-h-screen flex-1 pt-4">
+<!-- Main Content -->
+        <main class="lg:ml-[280px] min-h-screen flex-1 pt-[80px] lg:pt-4">
             <div class="px-container-padding pb-container-padding mx-auto max-w-[1630px] pt-2.7">
 
                 <!-- Page Header -->
                 <div class="mb-stack-lg flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                     <div>
-                        <h2 class="font-display-lg text-display-lg text-on-surface mb-2">
+                        <h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">
                             Laporan Helpdesk Aktif
                         </h2>
                         <p class="text-on-surface-variant text-sm">
@@ -174,7 +174,7 @@
                     action="{{ route('admin.helpdesk') }}"
                     class="bg-surface-container-lowest border-outline-variant p-unit mb-stack-md flex flex-wrap items-center justify-between gap-4 rounded-lg border shadow-sm"
                 >
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
                         <!-- Search Input -->
                         <div class="relative w-full sm:w-64">
                             <span
@@ -194,7 +194,7 @@
                             id="status"
                             name="status"
                             onchange="this.form.submit()"
-                            class="bg-surface border-outline-variant font-body-md text-body-md text-on-surface relative h-[40px] appearance-none rounded-md border px-3 pr-8 transition-colors focus:border-secondary focus:outline-none"
+                            class="bg-surface border-outline-variant font-body-md text-body-md text-on-surface relative h-[40px] w-full appearance-none rounded-md border px-3 pr-8 transition-colors focus:border-secondary focus:outline-none sm:w-auto"
                         >
                             <option value="">Semua Status</option>
                             <option value="In Progress" {{ request('status') === 'In Progress' ? 'selected' : '' }}>In Progress</option>
@@ -206,7 +206,42 @@
 
                 <!-- Data Table Container -->
                 <div class="bg-surface-container-lowest border-outline-variant overflow-hidden rounded-lg border shadow-sm">
-                    <div class="overflow-x-auto">
+                    <!-- Mobile Card List -->
+                    <div class="divide-outline-variant divide-y lg:hidden">
+                        @forelse ($helpdesks as $helpdesk)
+                            @php
+                                $statusClassM = match(strtolower($helpdesk->status_Helpdesk)) {
+                                    'waiting approval' => 'bg-primary-fixed text-on-primary-fixed',
+                                    'in repair'        => 'bg-secondary-fixed text-on-secondary-fixed',
+                                    'in progress'      => 'bg-tertiary-fixed text-on-tertiary-fixed',
+                                    default            => 'bg-surface-container text-on-surface-variant',
+                                };
+                            @endphp
+                            <a href="{{ route('admin.helpdesk.detail', $helpdesk->id_helpdesk) }}" class="block p-4 transition-colors hover:bg-surface-container-low active:bg-surface-container-low">
+                                <div class="mb-1 flex items-center justify-between gap-2">
+                                    <span class="font-mono text-xs text-on-surface-variant">{{ $helpdesk->nomor_Helpdesk }}</span>
+                                    <span class="font-label-sm text-label-sm {{ $statusClassM }} inline-flex items-center rounded-full px-2.5 py-0.5">{{ $helpdesk->status_Helpdesk }}</span>
+                                </div>
+                                <h3 class="font-body-md text-body-md text-on-surface mb-1 font-semibold">{{ $helpdesk->judul_masalah }}</h3>
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <p class="text-on-surface text-sm font-medium">{{ $helpdesk->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}</p>
+                                        <p class="text-on-surface-variant text-xs">{{ $helpdesk->pelapor?->jabatan_departemen ?? '-' }}</p>
+                                    </div>
+                                    <span class="text-on-surface-variant text-xs whitespace-nowrap">{{ \Carbon\Carbon::parse($helpdesk->tanggal_lapor)->translatedFormat('d M Y') }}</span>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="flex flex-col items-center gap-2 px-4 py-12 text-on-surface-variant text-center">
+                                <span class="material-symbols-outlined text-[48px]">inbox</span>
+                                <p class="font-medium">Tidak ada laporan aktif</p>
+                                <p class="text-sm">{{ request('search') || request('status') ? 'Coba ubah filter pencarian Anda.' : 'Belum ada laporan helpdesk yang masuk.' }}</p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Desktop Table -->
+                    <div class="hidden overflow-x-auto lg:block">
                         <table class="w-full border-collapse text-left">
                             <thead>
                                 <tr class="bg-surface border-outline-variant font-label-md text-label-md text-on-surface-variant border-b tracking-wider uppercase">

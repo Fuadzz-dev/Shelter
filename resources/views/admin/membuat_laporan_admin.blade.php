@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="id">
     <head>
-        <meta charset="utf-8" />
+<meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        @include('component.text_scale')
         <title>Buat Laporan Baru - SHELTER</title>
         <!-- Google Fonts: Inter -->
         <link href="https://fonts.googleapis.com" rel="preconnect" />
@@ -209,7 +210,7 @@
         <!-- Main Canvas -->
         <main class="px-gutter py-stack-lg mx-auto w-full max-w-5xl flex-grow">
             <!-- Page Header -->
-            <div class="mb-stack-lg flex flex-wrap items-start justify-between gap-4">
+            <div class="mb-stack-lg flex flex-col items-start justify-between gap-4 sm:flex-row sm:flex-wrap sm:items-start">
                 <div>
                     <h1
                         class="font-display-lg text-display-lg-mobile md:text-display-lg mb-2 text-primary"

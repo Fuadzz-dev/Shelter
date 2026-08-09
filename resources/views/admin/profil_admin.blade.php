@@ -200,8 +200,8 @@
 
         <div class="flex min-h-screen">
             <!-- Main Content Area -->
-            <main class="ml-[280px] flex-1">
-<div class="p-container-padding mx-auto py-12">
+            <main class="lg:ml-[280px] flex-1">
+<div class="p-container-padding mx-auto pt-[80px] lg:pt-12 lg:py-12">
                     <!-- Flash Messages -->
                     @if (session('success'))
                         <div class="border-green-200 bg-green-50 mb-6 flex items-center gap-3 rounded-lg border px-4 py-3 text-green-700">

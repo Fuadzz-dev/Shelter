@@ -156,7 +156,7 @@
         @include('component.sidebar_admin')
 
         <!-- Main Content Canvas -->
-        <main class="md:px-container-padding ml-[280px] pt-8 w-full">
+        <main class="px-container-padding lg:ml-[280px] pt-[80px] lg:pt-8 w-full">
             <div class="mx-auto">
             <!-- Page Header -->
             <div
@@ -172,7 +172,7 @@
                 <button
                     type="button"
                     onclick="openAddModal()"
-                    class="text-on-primary font-label-md text-label-md flex h-11 items-center gap-2 self-start rounded-lg bg-primary px-6 whitespace-nowrap shadow-sm transition-colors hover:bg-primary/90 sm:self-auto"
+                    class="text-on-primary font-label-md text-label-md flex h-11 w-full items-center justify-center gap-2 self-start rounded-lg bg-primary px-6 shadow-sm transition-colors hover:bg-primary/90 sm:w-auto sm:justify-start sm:self-auto sm:whitespace-nowrap"
                 >
                     <span
                         class="material-symbols-outlined"
@@ -204,7 +204,65 @@
             <div
                 class="bg-surface-container-lowest border-outline-variant/30 overflow-hidden rounded-xl border shadow-[0_4px_12px_rgba(0,51,102,0.04)]"
             >
-                <div class="overflow-x-auto">
+                <!-- Mobile Card List -->
+                <div id="userCardList" class="divide-outline-variant/30 divide-y lg:hidden">
+                    @forelse($pengguna as $user)
+                    <div
+                        class="p-4 transition-colors hover:bg-[#F1F5F9]"
+                        data-user-id="{{ $user->user_id }}"
+                        data-nip="{{ $user->nip }}"
+                        data-name="{{ $user->nama_lengkap }}"
+                        data-department="{{ $user->jabatan_departemen }}"
+                        data-role="{{ $user->role }}"
+                        data-status="{{ $user->status ?? 'active' }}"
+                        data-email="{{ $user->email }}"
+                    >
+                        <div class="mb-1 flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <p class="font-medium text-primary">{{ $user->nama_lengkap }}</p>
+                                <p class="text-on-surface-variant text-xs">{{ $user->nip }}</p>
+                            </div>
+                            @if(($user->status ?? 'active') === 'active')
+                            <span class="inline-flex items-center rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2 py-1 text-[11px] font-semibold text-[#047857]">Active</span>
+                            @else
+                            <span class="bg-outline-variant/30 text-on-surface-variant border-outline-variant/50 inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-semibold">Inactive</span>
+                            @endif
+                        </div>
+                        <p class="text-on-surface-variant mb-2 text-sm">{{ $user->jabatan_departemen }}</p>
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                @if($user->role === 'admin')
+                                <span class="bg-primary-container/10 text-primary-container inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold">
+                                    <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1">shield_person</span>
+                                    Admin
+                                </span>
+                                @else
+                                <span class="bg-surface-container-high text-on-surface-variant inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold">
+                                    <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 0">person</span>
+                                    User
+                                </span>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="openEditModal(this)" class="text-outline hover:bg-secondary-container/20 rounded-lg p-2 transition-colors hover:text-secondary" title="Edit User">
+                                    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0">edit</span>
+                                </button>
+                                <button type="button" onclick="resetPassword(this)" class="text-outline hover:bg-error/10 rounded-lg p-2 transition-colors hover:text-error" title="Reset Password">
+                                    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0">lock_reset</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-on-surface-variant px-6 py-12 text-center">
+                        <span class="material-symbols-outlined text-4xl mb-4 block" style="font-variation-settings: 'FILL' 0">group_off</span>
+                        Belum ada pengguna terdaftar.
+                    </div>
+                    @endforelse
+                </div>
+
+                <!-- Desktop Table -->
+                <div class="hidden overflow-x-auto lg:block">
                     <table class="w-full border-collapse text-left">
                         <thead>
                             <tr
@@ -930,21 +988,34 @@
             function filterPengguna() {
                 const input = document.getElementById('searchInput');
                 const query = (input ? input.value : '').trim().toLowerCase();
-                const tbody = document.getElementById('userTableBody');
-                if (!tbody) return;
 
-                const rows = tbody.querySelectorAll('tr[data-user-id]');
+                // Desktop table rows
+                const tbody = document.getElementById('userTableBody');
+                const rows = tbody ? tbody.querySelectorAll('tr[data-user-id]') : [];
+                // Mobile card items
+                const cards = document.querySelectorAll('#userCardList > [data-user-id]');
+
                 let visibleCount = 0;
 
+                function itemMatches(el) {
+                    const nama = (el.dataset.name || '').toLowerCase();
+                    const nip = (el.dataset.nip || '').toLowerCase();
+                    return !query || nama.includes(query) || nip.includes(query);
+                }
+
                 rows.forEach(function (row) {
-                    const nama = (row.dataset.name || '').toLowerCase();
-                    const nip = (row.dataset.nip || '').toLowerCase();
-                    const match = !query || nama.includes(query) || nip.includes(query);
+                    const match = itemMatches(row);
                     row.style.display = match ? '' : 'none';
                     if (match) visibleCount++;
                 });
 
-                // Tampilkan pesan "tidak ditemukan" jika hasil kosong
+                cards.forEach(function (card) {
+                    const match = itemMatches(card);
+                    card.style.display = match ? '' : 'none';
+                    if (match) visibleCount++;
+                });
+
+                // Tampilkan pesan "tidak ditemukan" jika hasil kosong (desktop)
                 let emptyRow = document.getElementById('searchEmptyRow');
                 if (visibleCount === 0 && rows.length > 0) {
                     if (!emptyRow) {
@@ -1030,7 +1101,7 @@
 
             // ========== Modal: Edit User ==========
             function openEditModal(button) {
-                const row = button.closest('tr');
+                const row = button.closest('[data-user-id]');
                 editingRow = row;
 
                 document.getElementById('editNip').value = row.dataset.nip || '';
@@ -1135,7 +1206,7 @@
             let resetTargetRow = null;
 
             function resetPassword(button) {
-                const row = button.closest('tr');
+                const row = button.closest('[data-user-id]');
                 resetTargetRow = row;
 
                 document.getElementById('resetConfirmName').textContent = row.dataset.name || '';

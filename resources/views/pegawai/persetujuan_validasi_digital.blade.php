@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        @include('component.text_scale')
         <title>Validasi Penyelesaian Tiket - SHELTER</title>
         <!-- Google Fonts: Inter -->
         <link href="https://fonts.googleapis.com" rel="preconnect" />

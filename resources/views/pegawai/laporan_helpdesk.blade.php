@@ -171,21 +171,21 @@
         @include('component.sidebar_pegawai')
 
         <!-- Main Content Area -->
-        <main class="w-full min-h-screen flex flex-col ml-[280px]">
-            <div class="p-container-padding flex-1 bg-surface-bright flex flex-col gap-stack-lg mt-6">
+        <main class="w-full min-h-screen flex flex-col lg:ml-[280px]">
+            <div class="p-container-padding flex-1 bg-surface-bright flex flex-col gap-stack-lg pt-[80px] lg:pt-0 mt-0 lg:mt-6">
                 <!-- Page Header Section -->
                 <div
                     class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end"
                 >
                     <div>
                         <h2
-                            class="font-display-lg text-display-lg text-primary-container"
+                            class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary-container"
                         >
                             Laporan Helpdesk
                         </h2>
                     </div>
                     <a href="{{ route('pegawai.laporan-helpdesk.create') }}"
-                        class="bg-primary-container flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-semibold text-white shadow-sm transition-all hover:bg-primary hover:shadow-md active:scale-95"
+                        class="bg-primary-container flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-primary hover:shadow-md active:scale-95"
                     >
                         <span class="material-symbols-outlined"
                             >add_circle</span
@@ -206,11 +206,11 @@
                         >
                             Daftar Laporan
                         </h3>
-                        <div
-                            class="flex items-center gap-3 self-end sm:self-auto"
+<div
+                            class="flex items-center gap-3 self-end sm:self-auto w-full sm:w-auto max-w-full overflow-x-auto"
                         >
                             <div
-                                class="border-outline-variant flex overflow-hidden rounded-lg border"
+                                class="border-outline-variant flex overflow-x-auto rounded-lg border"
                             >
                                 <a
                                     href="{{ route('pegawai.laporan-helpdesk', ['filter' => 'semua']) }}"
@@ -237,7 +237,43 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <!-- Mobile Card List -->
+                    <div class="divide-outline-variant divide-y lg:hidden">
+                        @forelse($laporans as $laporan)
+                            @php
+                                $badgeClassM = $statusBadgeClasses[$laporan->status_Helpdesk] ?? 'bg-secondary-container/20 text-on-secondary-container';
+                                $dotClassM = $statusDotClasses[$laporan->status_Helpdesk] ?? 'bg-secondary-container';
+                            @endphp
+                            <div class="p-4 transition-colors hover:bg-surface-container-low">
+                                <div class="mb-1.5 flex items-start justify-between gap-2">
+                                    <span class="text-on-surface-variant text-xs whitespace-nowrap">{{ $laporan->tanggal_lapor ? $laporan->tanggal_lapor->format('d M Y') : '-' }}</span>
+                                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-tighter uppercase {{ $badgeClassM }}">
+                                        <span class="h-1.5 w-1.5 rounded-full {{ $dotClassM }}"></span>{{ $laporan->status_Helpdesk }}
+                                    </span>
+                                </div>
+<h3 class="font-body-md text-body-md text-on-surface mb-3 font-semibold leading-snug">{{ $laporan->judul_masalah }}</h3>
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('pegawai.laporan-helpdesk.detail', $laporan->id_helpdesk) }}"
+                                        class="bg-primary-container text-on-primary inline-flex flex-1 items-center justify-center gap-1 rounded-lg px-3 py-2 font-label-md text-label-md font-semibold transition-colors hover:bg-primary">
+                                        Detail
+                                    </a>
+                                    @if($laporan->status_Helpdesk === 'Waiting Approval')
+                                    <a href="{{ route('pegawai.laporan-helpdesk.validasi-digital', $laporan->id_helpdesk) }}"
+                                        class="bg-secondary text-on-secondary inline-flex flex-1 items-center justify-center gap-1 rounded-lg px-3 py-2 font-label-md text-label-md font-semibold transition-colors hover:bg-secondary/90 whitespace-nowrap">
+                                        Validasi &amp; Selesai
+                                    </a>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <div class="px-4 py-10 text-center text-on-surface-variant">
+                                Belum ada laporan.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Desktop Table -->
+                    <div class="hidden overflow-x-auto lg:block">
                         <table class="w-full border-collapse text-left">
                             <thead>
                                 <tr

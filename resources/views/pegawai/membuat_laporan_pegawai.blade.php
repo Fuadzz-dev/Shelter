@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        @include('component.text_scale')
         <title>Buat Laporan Baru - SHELTER</title>
         <!-- Google Fonts: Inter -->
         <link href="https://fonts.googleapis.com" rel="preconnect" />
@@ -209,7 +210,7 @@
         <!-- Main Canvas -->
         <main class="px-gutter py-stack-lg mx-auto w-full max-w-5xl flex-grow">
             <!-- Page Header -->
-            <div class="mb-stack-lg flex items-start justify-between">
+            <div class="mb-stack-lg flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <h1
                         class="font-display-lg text-display-lg-mobile md:text-display-lg mb-2 text-primary"

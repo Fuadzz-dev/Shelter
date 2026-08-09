@@ -156,12 +156,12 @@
     <!-- Sidebar Admin -->
     @include('component.sidebar_admin')
 
-    <!-- Main Content Canvas -->
-    <main class="flex-1 w-full min-h-screen flex flex-col bg-background pt-4 ml-[280px]">
+<!-- Main Content Canvas -->
+    <main class="flex-1 w-full min-h-screen flex flex-col bg-background pt-[80px] lg:pt-4 lg:ml-[280px]">
         <!-- Page Header -->
         <div class="px-container-padding flex flex-col md:flex-row md:items-end justify-between gap-4 py-stack-md">
-            <div>
-                <h2 class="font-display-lg text-display-lg text-primary mb-1">
+<div>
+                <h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-1">
                     Riwayat Helpdesk (Selesai)
                 </h2>
                 <p class="font-body-md text-body-md text-on-surface-variant">
@@ -223,10 +223,90 @@
                     </div>
                 </div>
             </form>
-            <!-- Data Table Section -->
+<!-- Data Table Section -->
             <div
                 class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden flex-1 flex flex-col">
-                <div class="overflow-x-auto flex-1">
+                <!-- Mobile Card List -->
+                <div class="divide-y divide-outline-variant/50 lg:hidden">
+                    @forelse ($riwayatHelpdesks as $item)
+                        @php
+                            $persetujuanM = $item->persetujuanDigital->first();
+                            $riwayatPertamaM = $item->riwayat->first();
+                            $waktuSelesaiM = $persetujuanM?->waktu_persetujuan
+                                ?? $riwayatPertamaM?->waktu_diselesaikan;
+                            $statusValidasiM = $persetujuanM?->status_dokumen;
+                            $namaAdminM = $riwayatPertamaM?->pelapor?->nama_lengkap
+                                ?? $riwayatPertamaM?->pelapor?->name
+                                ?? $persetujuanM?->penyetuju?->nama_lengkap
+                                ?? $persetujuanM?->penyetuju?->name
+                                ?? '';
+                        @endphp
+                        <div class="p-4">
+                            <div class="mb-1 flex items-start justify-between gap-2">
+                                <div class="min-w-0">
+                                    <p class="font-medium text-on-surface">{{ $item->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}</p>
+                                    <p class="text-on-surface-variant text-xs">{{ $item->pelapor?->nip ?? '-' }}</p>
+                                </div>
+                                <span class="text-on-surface-variant text-xs whitespace-nowrap">{{ $waktuSelesaiM ? \Carbon\Carbon::parse($waktuSelesaiM)->translatedFormat('d M Y') : '-' }}</span>
+                            </div>
+                            <h3 class="font-body-md text-body-md text-on-surface mb-3 font-semibold leading-snug">{{ $item->judul_masalah }}</h3>
+                            <div class="mb-3 flex flex-wrap items-center gap-2">
+                                @if ($statusValidasiM === 'Valid')
+                                    <button type="button" onclick="openQrModal('{{ $item->nomor_Helpdesk }}', '{{ $item->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}', '{{ $item->judul_masalah }}', '{{ $item->id_helpdesk }}', 'Valid', '{{ url('/verifikasi') }}')" class="bg-secondary-container/20 text-secondary inline-flex h-9 items-center gap-1.5 rounded-full px-3 transition-colors hover:bg-secondary-container/40">
+                                        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+                                        <span class="font-label-sm text-label-sm font-bold">Valid</span>
+                                    </button>
+                                @elseif ($statusValidasiM === 'Invalid')
+                                    <button type="button" onclick="openQrModal('{{ $item->nomor_Helpdesk }}', '{{ $item->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}', '{{ $item->judul_masalah }}', '{{ $item->id_helpdesk }}', 'Invalid', '{{ url('/verifikasi') }}')" class="bg-error-container text-on-error-container inline-flex h-9 items-center gap-1.5 rounded-full px-3 transition-colors hover:bg-error-container/70">
+                                        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+                                        <span class="font-label-sm text-label-sm font-bold">Invalid</span>
+                                    </button>
+                                @else
+                                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container text-on-surface-variant">
+                                        <span class="material-symbols-outlined text-[16px]">help</span>
+                                        <span class="font-label-sm text-label-sm font-bold">Belum Validasi</span>
+                                    </div>
+                                @endif
+                                @if ($statusValidasiM === 'Valid')
+                                    <button type="button" onclick="openQrModal('{{ $item->nomor_Helpdesk }}', '{{ $item->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}', '{{ $item->judul_masalah }}', '{{ $item->id_helpdesk }}', 'Valid', '{{ url('/verifikasi-admin') }}', '{{ $namaAdminM }}')" class="bg-secondary-container/20 text-secondary inline-flex h-9 items-center gap-1.5 rounded-full px-3 transition-colors hover:bg-secondary-container/40">
+                                        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+                                        <span class="font-label-sm text-label-sm font-bold">Admin Valid</span>
+                                    </button>
+                                @elseif ($statusValidasiM === 'Invalid')
+                                    <button type="button" onclick="openQrModal('{{ $item->nomor_Helpdesk }}', '{{ $item->pelapor?->nama_lengkap ?? 'Tidak Diketahui' }}', '{{ $item->judul_masalah }}', '{{ $item->id_helpdesk }}', 'Invalid', '{{ url('/verifikasi-admin') }}', '{{ $namaAdminM }}')" class="bg-error-container text-on-error-container inline-flex h-9 items-center gap-1.5 rounded-full px-3 transition-colors hover:bg-error-container/70">
+                                        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+                                        <span class="font-label-sm text-label-sm font-bold">Admin Invalid</span>
+                                    </button>
+                                @else
+                                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container text-on-surface-variant">
+                                        <span class="material-symbols-outlined text-[16px]">help</span>
+                                        <span class="font-label-sm text-label-sm font-bold">Admin Belum Validasi</span>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('admin.riwayat-helpdesk.detail', $item->id_helpdesk) }}" class="flex-1 px-3 py-2 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors inline-flex items-center justify-center">
+                                    Detail
+                                </a>
+                                @if ($statusValidasiM === 'Valid')
+                                    <a href="{{ route('admin.riwayat-helpdesk.download', $item->id_helpdesk) }}" class="flex-1 px-3 py-2 rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container-low transition-colors inline-flex items-center justify-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[16px]">download</span>
+                                        Unduh Laporan
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @empty
+                        <div class="flex flex-col items-center gap-2 px-4 py-12 text-center text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[48px]">history</span>
+                            <p class="font-medium">Tidak ada riwayat helpdesk</p>
+                            <p class="text-sm">Belum ada laporan helpdesk yang selesai.</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                <!-- Desktop Table -->
+                <div class="hidden overflow-x-auto flex-1 lg:block">
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-surface-container-low border-b border-outline-variant">
                             <tr>

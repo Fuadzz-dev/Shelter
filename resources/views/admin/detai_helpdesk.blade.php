@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        @include('component.text_scale')
         <title>Detail Laporan - SHELTER</title>
         <link href="https://fonts.googleapis.com" rel="preconnect" />
         <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -134,9 +135,9 @@
         <!-- Main Canvas -->
         <main class="px-gutter py-stack-lg mx-auto w-full max-w-5xl flex-grow">
             <!-- Page Header -->
-            <div class="mb-[17px] flex items-center justify-between">
+            <div class="mb-[17px] flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <div class="flex items-center gap-3 mb-2">
+                    <div class="flex flex-wrap items-center gap-3 mb-2">
                         <span class="bg-secondary-container/20 text-on-secondary-container font-label-md text-label-sm rounded px-3 py-1 tracking-wider uppercase">
                             {{ $helpdesk->nomor_Helpdesk }}
                         </span>

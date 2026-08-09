@@ -147,10 +147,10 @@
     @include('component.sidebar_pegawai')
 
     <!-- Main Content Area -->
-    <main class="w-full min-h-screen flex flex-col ml-[280px]">
-        <!-- Page Content -->
-        <div class="p-container-padding flex-1 bg-surface-bright flex flex-col gap-stack-lg mt-6">
-            <h1 class="text-[32px] font-bold text-on-surface mb-6 uppercase tracking-tight">
+    <main class="w-full min-h-screen flex flex-col lg:ml-[280px]">
+<!-- Page Content -->
+        <div class="p-container-padding flex-1 bg-surface-bright flex flex-col gap-stack-lg pt-[80px] lg:pt-0 mt-0 lg:mt-6">
+            <h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg font-bold text-on-surface mb-6 uppercase tracking-tight">
                 Dashboard
             </h1>
 

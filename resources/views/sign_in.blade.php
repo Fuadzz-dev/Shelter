@@ -168,7 +168,7 @@
         </style>
     </head>
     <body
-        class="relative flex min-h-screen items-center justify-center overflow-hidden p-4"
+        class="relative flex min-h-screen items-center justify-center overflow-y-auto p-4 py-6"
     >
         <!-- Background Architectural Element -->
         <div class="pointer-events-none absolute inset-0 z-0 opacity-10">
@@ -182,12 +182,12 @@
         <!-- Login Container -->
         <main class="z-10 w-full max-w-[440px]">
             <div
-                class="glass-card p-stack-lg animate-in rounded-xl shadow-xl duration-700 fade-in slide-in-from-bottom-4"
+                class="glass-card animate-in rounded-xl shadow-xl duration-700 fade-in slide-in-from-bottom-4 p-6 sm:p-stack-lg"
             >
                 <!-- Branding Header -->
                 <div class="mb-stack-lg flex flex-col items-center">
                     <div
-                        class="mb-stack-md flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-primary shadow-lg"
+                        class="mb-stack-md flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-primary shadow-lg sm:h-20 sm:w-20"
                     >
                         <span
                             class="material-symbols-outlined !text-4xl text-white"
@@ -196,7 +196,7 @@
                         >
                     </div>
                     <h1
-                        class="font-display-lg text-display-lg text-center text-primary"
+                        class="font-display-lg text-display-lg-mobile sm:text-display-lg text-center text-primary"
                     >
                         SHELTER
                     </h1>
@@ -205,11 +205,6 @@
                     >
                         Otban Wilayah V IT Helpdesk
                     </p>
-                </div>
-                <div class="mb-stack-lg">
-                    <h2
-                        class="font-headline-sm text-headline-sm text-on-surface mb-1"
-                    ></h2>
                 </div>
                 <!-- Login Form -->
                 @if ($errors->any())
