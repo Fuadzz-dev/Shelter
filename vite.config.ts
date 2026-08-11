@@ -6,6 +6,8 @@ import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
 import { defineConfig } from 'vite';
 
+const isVercel = !!process.env.VERCEL;
+
 export default defineConfig({
     plugins: [
         laravel({
@@ -24,8 +26,8 @@ export default defineConfig({
             },
         }),
         tailwindcss(),
-        wayfinder({
-            formVariants: true,
-        }),
+        // Wayfinder butuh PHP untuk regenerate types — tidak tersedia di build
+        // Vercel, jadi di-skip di sana dan pakai file yang sudah di-commit.
+        ...(isVercel ? [] : [wayfinder({ formVariants: true })]),
     ],
 });
