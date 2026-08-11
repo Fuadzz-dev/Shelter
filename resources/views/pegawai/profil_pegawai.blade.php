@@ -249,7 +249,7 @@
                                         id="profileImagePreview"
                                         class="border-surface-container h-40 w-40 rounded-full border-4 object-cover shadow-sm"
                                         alt="Foto Profil"
-                                        src="{{ $profilFoto ?: asset('default_profil.jpg') }}"
+                                        src="{{ $profilFoto ?: asset('images/default_profil.jpg') }}"
                                     />
                                     <label
                                         for="foto_profil"

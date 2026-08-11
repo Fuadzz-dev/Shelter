@@ -54,7 +54,7 @@
     <!-- Foto Profil (Sebelah Kanan) -->
     <a href="{{ route('admin.profil') }}" class="bg-primary-fixed flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden border border-white/20 shadow-sm">
         <img
-            src="{{ $sidebarPhoto ?: asset('default_profil.jpg') }}"
+            src="{{ $sidebarPhoto ?: asset('images/default_profil.jpg') }}"
             alt="Profile"
             class="h-full w-full rounded-full object-cover"
         />
@@ -75,7 +75,7 @@
             class="bg-primary-fixed flex h-[55px] w-[55px] shrink-0 items-center justify-center rounded-full overflow-hidden"
         >
             <img
-                src="{{ $sidebarPhoto ?: asset('default_profil.jpg') }}"
+                src="{{ $sidebarPhoto ?: asset('images/default_profil.jpg') }}"
                 alt="Profile"
                 class="h-full w-full rounded-full object-cover"
             />
@@ -147,7 +147,7 @@
         <div class="flex items-center gap-3">
             <div class="bg-primary-fixed flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden border border-white/20">
                 <img
-                    src="{{ $sidebarPhoto ?: asset('default_profil.jpg') }}"
+                    src="{{ $sidebarPhoto ?: asset('images/default_profil.jpg') }}"
                     alt="Profile"
                     class="h-full w-full rounded-full object-cover"
                 />
